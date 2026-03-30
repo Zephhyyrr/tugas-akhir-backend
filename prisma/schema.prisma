@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RoleUser {
+  superadmin
+  admin
+}
+
+model User {
+  id          Int         @id @default(autoincrement())
+  isDeleted   Boolean     @default(false)
+  nama        String
+  email       String      @unique
+  role        RoleUser
+  password    String
+  userToken   UserToken[]
+  fotoProfile String?
+  isVerified  Boolean     @default(false)
+
+  contents     Content[]
+  transactions Transaction[]
+}
+
+model UserToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Content {
+  id        Int     @id @default(autoincrement())
+  isDeleted Boolean @default(false)
+  judul     String
+  isi       String  @db.Text
+  gambarUrl String?
+  videoUrl  String?
+  status    String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model KeteranganTransaksi {
+  id   Int    @id @default(autoincrement())
+  nama String
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id      Int      @id @default(autoincrement())
+  saldo   Float
+  kredit  Float
+  debet   Float
+  uraian  String
+  tanggal DateTime
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  keteranganTransaksiId Int
+  keteranganTransaksi   KeteranganTransaksi @relation(fields: [keteranganTransaksiId], references: [id])
+}
+
+model Prediction {
+  id                  Int      @id @default(autoincrement())
+  prediksiPemasukan   Float
+  prediksiPengeluaran Float
+  tanggalTarget       DateTime
+  rmse                Float
+  wmape               Float
+}
