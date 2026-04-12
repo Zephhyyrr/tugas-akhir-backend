@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-export function isRole(allowedRoles: $Enums.RoleUser[]) {
+export function isRole(...allowedRoles: $Enums.RoleUser[]) {
     return (req: Request, res: Response<ResponseApiType>, next: NextFunction) => {
         const user = req.user
         if (!allowedRoles.includes(user?.role!)) {

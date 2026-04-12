@@ -53,10 +53,21 @@ export async function updateKeteranganTransaksiService(id: number, nama: string)
 }
 
 export async function deleteKeteranganTransaksiService(id: number) {
-    await getKeteranganTransaksiByIdService(id);
+    const keteranganTransaksi = await prisma.keteranganTransaksi.findUnique({
+        where: { id },
+        include: { transactions: true },
+    });
 
-    const deleted = await prisma.keteranganTransaksi.delete({
-        where: { id }
+    if (!keteranganTransaksi) {
+        throw new AppError(`Keterangan Transaksi dengan id: ${id}, tidak tersedia.`);
+    }
+
+    const newDeletedStatus = !keteranganTransaksi.isDeleted;
+
+    const deleted = await prisma.keteranganTransaksi.update({
+        where: { id },
+        data: { isDeleted: newDeletedStatus },
+        include: { transactions: true },
     });
 
     return deleted;

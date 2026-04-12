@@ -70,11 +70,15 @@ export async function deleteUserController(req: Request, res: Response<ResponseA
             });
         }
         
-        const deletedUser = await deleteUserService(Number(id));
+        const { user: deletedUser, action } = await deleteUserService(Number(id));
+
+        const message = action === 'delete' 
+            ? `Berhasil menghapus user: ${deletedUser.nama}`
+            : `Berhasil mengaktifkan kembali user: ${deletedUser.nama}. Verifikasi email telah dikirim.`;
 
         return res.status(200).json({
             success: true,
-            message: `Berhasil menghapus user: ${deletedUser.nama}`
+            message: message
         });
     } catch (error) {
         return handlerAnyError(error, res);

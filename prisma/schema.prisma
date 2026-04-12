@@ -52,6 +52,7 @@ model Content {
 model KeteranganTransaksi {
   id   Int    @id @default(autoincrement())
   nama String
+  isDeleted Boolean @default(false)
 
   transactions Transaction[]
 }
@@ -63,6 +64,7 @@ model Transaction {
   debet   Float
   uraian  String
   tanggal DateTime
+  isDeleted Boolean @default(false)
 
   userId Int
   user   User @relation(fields: [userId], references: [id])

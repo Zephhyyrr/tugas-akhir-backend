@@ -2,18 +2,21 @@ import prisma from "../config/prisma";
 import { AppError } from "../errors/api_errors";
 import { RoleUser } from "@prisma/client";
 import { getPagination, getPagingData } from "../utils/pagination";
-import nodemailer from "nodemailer";
 import { hashing } from "../utils/bcrypt";
 import { generateToken } from "../utils/jwt";
-
+import { transporter } from "../config/mail";
+import { verifyEmailTemplate } from "../templates/email/verify_email";
 export async function getAllUserService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const users = await prisma.user.findMany({
         skip,
         take,
+        where: { isDeleted: false }
     });
 
-    const totalItems = await prisma.user.count();
+    const totalItems = await prisma.user.count({
+        where: { isDeleted: false }
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: users,
@@ -49,7 +52,12 @@ export async function createUserService(
             }
         });
 
-        const token = await generateToken({ id: user.id, email: user.email });
+        const token = await generateToken({ 
+            id: user.id, 
+            email: user.email,
+            role: user.role,
+            nama: user.nama
+        });
 
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 24);
@@ -115,15 +123,56 @@ export async function updateUserService(
 }
 
 export async function deleteUserService(id: number) {
-    await findUserById(id)
-    const deleted = await prisma.user.delete({ where: { id } })
+    const user = await prisma.user.findUnique({ where: { id } });
+    
+    if (!user) {
+        throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
+    }
 
-    return deleted
+    const newDeletedStatus = !user.isDeleted;
+    
+    const result = await prisma.user.update({
+        where: { id },
+        data: { isDeleted: newDeletedStatus }
+    });
+
+    if (!newDeletedStatus) {
+        const token = await generateToken({ 
+            id: user.id, 
+            email: user.email,
+            role: user.role,
+            nama: user.nama
+        });
+        
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
+
+        await prisma.userToken.deleteMany({ where: { userId: id } });
+        
+        await prisma.userToken.create({
+            data: {
+                userId: user.id,
+                token: token,
+                expiresAt: expiresAt
+            }
+        });
+
+        try {
+            await sendVerificationEmail(result.email, result.nama, token);
+        } catch (error) {
+            // Log error jika pengiriman email gagal
+        }
+    }
+
+    return {
+        user: result,
+        action: newDeletedStatus ? 'delete' : 'undelete'
+    };
 }
 
 const findUserById = async (id: number) => {
     const user = await prisma.user.findUnique({ where: { id } })
-    if (!user) throw new AppError(`User dengan id: ${id}, tidak tersedia.`)
+    if (!user || user.isDeleted) throw new AppError(`User dengan id: ${id}, tidak tersedia.`)
 
     return user
 }
@@ -138,28 +187,14 @@ export async function updatePhotoProfileService(params: { id: number; fotoProfil
     return updated;
 }
 
-// Helper Functions
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
-
 const sendVerificationEmail = async (email: string, nama: string, token: string) => {
-    const verifyUrl = `${process.env.APP_URL || 'http://localhost:3000'}/api/verify-email?token=${token}`;
+    const verifyUrl = `${process.env.PORT || 'http://localhost:3000'}/api/auth/verify-email?token=${token}`;
+    const htmlContent = verifyEmailTemplate(nama, verifyUrl);
     const mailOptions = {
         from: `"Aplikasi Saya" <${process.env.SMTP_USER}>`,
         to: email,
-        subject: "Verifikasi Akun Anda",
-        html: `
-            <h3>Halo, ${nama}!</h3>
-            <p>Silakan klik link di bawah ini untuk memverifikasi alamat email Anda:</p>
-            <a href="${verifyUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verifikasi Email</a>
-        `,
+        subject: "Verifikasi Email - Aplikasi Saya",
+        html: htmlContent
     };
 
     await transporter.sendMail(mailOptions);

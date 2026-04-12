@@ -106,10 +106,27 @@ export async function updateTransactionService(
 }
 
 export async function deleteTransactionService(id: number) {
-    await getTransactionByIdService(id);
+    const transaction = await prisma.transaction.findUnique({
+        where: { id },
+        include: {
+            user: true,
+            keteranganTransaksi: true,
+        },
+    });
 
-    const deleted = await prisma.transaction.delete({
-        where: { id }
+    if (!transaction) {
+        throw new AppError(`Transaction dengan id: ${id}, tidak tersedia.`);
+    }
+
+    const newDeletedStatus = !transaction.isDeleted;
+
+    const deleted = await prisma.transaction.update({
+        where: { id },
+        data: { isDeleted: newDeletedStatus },
+        include: {
+            user: true,
+            keteranganTransaksi: true,
+        },
     });
 
     return deleted;

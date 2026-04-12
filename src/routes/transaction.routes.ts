@@ -11,13 +11,15 @@ import {
     updateTransactionValidator,
     idValidator
 } from "../validator/transaction.validator";
+import { jwtCheckToken } from "../middlewares/jwt_check_token";
+import { isRole } from "../middlewares/is_role";
 
 const router = Router();
 
-router.get("/", getAllTransactionController);
-router.get("/:id", idValidator, getTransactionByIdController);
-router.post("/", createTransactionValidator, createTransactionController);
-router.put("/:id", updateTransactionValidator, updateTransactionController);
-router.delete("/:id", idValidator, deleteTransactionController);
+router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllTransactionController);
+router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getTransactionByIdController);
+router.post("/", jwtCheckToken, isRole("admin", "superadmin"), createTransactionValidator, createTransactionController);
+router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), updateTransactionValidator, updateTransactionController);
+router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteTransactionController);
 
 export default router;

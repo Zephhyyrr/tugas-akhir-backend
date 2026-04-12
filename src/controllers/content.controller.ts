@@ -42,15 +42,29 @@ export async function getContentByIdController(req: Request, res: Response<Respo
 
 export async function createContentController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { judul, isi, status, userId, gambarUrl, videoUrl } = req.body;
+        const { judul, isi, status, userId } = req.body;
+        const baseUrl = process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:3000";
+
+        const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
+        
+        let gambarUrls: string[] = [];
+        let videoUrls: string[] = [];
+
+        if (files?.gambar) {
+            gambarUrls = files.gambar.map(file => `${baseUrl}/uploads/${file.filename}`);
+        }
+
+        if (files?.video) {
+            videoUrls = files.video.map(file => `${baseUrl}/uploads/${file.filename}`);
+        }
 
         const newContent = await createContentService(
             judul,
             isi,
             status,
             userId,
-            gambarUrl,
-            videoUrl
+            gambarUrls.length > 0 ? gambarUrls.join(',') : undefined,
+            videoUrls.length > 0 ? videoUrls.join(',') : undefined
         );
 
         return res.status(201).json({
@@ -66,7 +80,21 @@ export async function createContentController(req: Request, res: Response<Respon
 export async function updateContentController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { judul, isi, status, gambarUrl, videoUrl } = req.body;
+        const { judul, isi, status } = req.body;
+        const baseUrl = process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:3000";
+
+        const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
+        
+        let gambarUrl: string | undefined;
+        let videoUrl: string | undefined;
+
+        if (files?.gambar && files.gambar.length > 0) {
+            gambarUrl = files.gambar.map(file => `${baseUrl}/uploads/${file.filename}`).join(',');
+        }
+
+        if (files?.video && files.video.length > 0) {
+            videoUrl = files.video.map(file => `${baseUrl}/uploads/${file.filename}`).join(',');
+        }
 
         const updatedContent = await updateContentService(
             Number(id),

@@ -4,7 +4,9 @@ import userRoutes from "./user.routes";
 import contentRoutes from "./content.routes";
 import keteranganTransaksiRoutes from "./keterangan_transaksi.routes";
 import transactionRoutes from "./transaction.routes";
+import authRoutes from "./auth.routes";
 
+apiRouter.use("/auth", authRoutes);
 apiRouter.use("/users", userRoutes);
 apiRouter.use("/contents", contentRoutes);
 apiRouter.use("/keterangan-transaksi", keteranganTransaksiRoutes);

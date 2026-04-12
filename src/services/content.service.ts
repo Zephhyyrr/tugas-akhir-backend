@@ -88,11 +88,21 @@ export async function updateContentService(
 }
 
 export async function deleteContentService(id: number) {
-    await getContentByIdService(id);
+    const content = await prisma.content.findUnique({
+        where: { id },
+        include: { user: true },
+    });
+
+    if (!content) {
+        throw new AppError(`Content dengan id: ${id}, tidak tersedia.`);
+    }
+
+    const newDeletedStatus = !content.isDeleted;
 
     const deleted = await prisma.content.update({
         where: { id },
-        data: { isDeleted: true }
+        data: { isDeleted: newDeletedStatus },
+        include: { user: true },
     });
 
     return deleted;
