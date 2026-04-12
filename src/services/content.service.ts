@@ -16,7 +16,11 @@ export async function getAllContentService(page: number, limit: number) {
     });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
-        data: contents,
+        data: contents.map(c => ({
+            ...c,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt
+        })),
         meta: meta
     };
 }
@@ -31,7 +35,11 @@ export async function getContentByIdService(id: number) {
         throw new AppError(`Content dengan id: ${id}, tidak tersedia.`);
     }
 
-    return content;
+    return {
+        ...content,
+        createdAt: content.createdAt,
+        updatedAt: content.updatedAt
+    };
 }
 
 export async function createContentService(
@@ -59,7 +67,11 @@ export async function createContentService(
         include: { user: true },
     });
 
-    return content;
+    return {
+        ...content,
+        createdAt: content.createdAt,
+        updatedAt: content.updatedAt
+    };
 }
 
 export async function updateContentService(
@@ -70,7 +82,6 @@ export async function updateContentService(
     gambarUrl?: string,
     videoUrl?: string
 ) {
-    await getContentByIdService(id);
 
     const updated = await prisma.content.update({
         where: { id },
@@ -79,12 +90,16 @@ export async function updateContentService(
             isi,
             status,
             gambarUrl,
-            videoUrl
+            videoUrl,
         },
         include: { user: true },
     });
 
-    return updated;
+    return {
+        ...updated,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt
+    };
 }
 
 export async function deleteContentService(id: number) {
@@ -105,5 +120,9 @@ export async function deleteContentService(id: number) {
         include: { user: true },
     });
 
-    return deleted;
+    return {
+        ...deleted,
+        createdAt: deleted.createdAt,
+        updatedAt: deleted.updatedAt
+    };
 }

@@ -11,7 +11,17 @@ export async function getAllUserService(page: number, limit: number) {
     const users = await prisma.user.findMany({
         skip,
         take,
-        where: { isDeleted: false }
+        where: { isDeleted: false },
+        select: {
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
     });
 
     const totalItems = await prisma.user.count({
@@ -22,6 +32,41 @@ export async function getAllUserService(page: number, limit: number) {
         data: users,
         meta: meta
     };
+}
+
+export async function getByIdService(params: { id: number }) {
+    const { id } = params;
+    const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {  
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+    return user;
+}
+
+export async function getUserByIdService(id: number) {
+    const user = await prisma.user.findUnique({
+        where: { id: Number(id) },
+        select: {  
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+    return user;
 }
 
 export async function createUserService(
@@ -80,7 +125,11 @@ export async function createUserService(
     }
 
     const { password: _, ...userWithoutPassword } = result.user;
-    return userWithoutPassword;
+    return {
+        ...userWithoutPassword,
+        createdAt: result.user.createdAt,
+        updatedAt: result.user.updatedAt
+    };
 }
 
 export async function updateUserService(
@@ -117,6 +166,16 @@ export async function updateUserService(
     const updated = await prisma.user.update({
         where: { id },
         data,
+        select: {
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
     });
 
     return updated;
@@ -133,7 +192,17 @@ export async function deleteUserService(id: number) {
     
     const result = await prisma.user.update({
         where: { id },
-        data: { isDeleted: newDeletedStatus }
+        data: { isDeleted: newDeletedStatus },
+        select: {
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
     });
 
     if (!newDeletedStatus) {
@@ -182,7 +251,17 @@ export async function updatePhotoProfileService(params: { id: number; fotoProfil
     await findUserById(id);
     const updated = await prisma.user.update({
         where: { id },
-        data: { fotoProfile }
+        data: { fotoProfile },
+        select: {
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+            fotoProfile: true,
+            isVerified: true,
+            createdAt: true,
+            updatedAt: true
+        }
     });
     return updated;
 }

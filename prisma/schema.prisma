@@ -21,6 +21,8 @@ model User {
   userToken   UserToken[]
   fotoProfile String?
   isVerified  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   contents     Content[]
   transactions Transaction[]
@@ -30,10 +32,11 @@ model UserToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
 }
 
 model Content {
@@ -44,27 +47,33 @@ model Content {
   gambarUrl String?
   videoUrl  String?
   status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
 }
 
 model KeteranganTransaksi {
-  id   Int    @id @default(autoincrement())
-  nama String
+  id        Int     @id @default(autoincrement())
+  nama      String
   isDeleted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   transactions Transaction[]
 }
 
 model Transaction {
-  id      Int      @id @default(autoincrement())
-  saldo   Float
-  kredit  Float
-  debet   Float
-  uraian  String
-  tanggal DateTime
-  isDeleted Boolean @default(false)
+  id         Int      @id @default(autoincrement())
+  saldo      Float
+  kredit     Float
+  debet      Float
+  uraian     String
+  tanggal    DateTime
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -80,4 +89,6 @@ model Prediction {
   tanggalTarget       DateTime
   rmse                Float
   wmape               Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }

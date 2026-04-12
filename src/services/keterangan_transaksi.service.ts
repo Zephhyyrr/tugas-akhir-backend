@@ -13,7 +13,11 @@ export async function getAllKeteranganTransaksiService(page: number, limit: numb
     const totalItems = await prisma.keteranganTransaksi.count();
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
-        data: keteranganTransaksi,
+        data: keteranganTransaksi.map(kt => ({
+            ...kt,
+            createdAt: kt.createdAt,
+            updatedAt: kt.updatedAt
+        })),
         meta: meta
     };
 }
@@ -28,7 +32,11 @@ export async function getKeteranganTransaksiByIdService(id: number) {
         throw new AppError(`Keterangan Transaksi dengan id: ${id}, tidak tersedia.`);
     }
 
-    return keteranganTransaksi;
+    return {
+        ...keteranganTransaksi,
+        createdAt: keteranganTransaksi.createdAt,
+        updatedAt: keteranganTransaksi.updatedAt
+    };
 }
 
 export async function createKeteranganTransaksiService(nama: string) {
@@ -37,7 +45,11 @@ export async function createKeteranganTransaksiService(nama: string) {
         include: { transactions: true },
     });
 
-    return keteranganTransaksi;
+    return {
+        ...keteranganTransaksi,
+        createdAt: keteranganTransaksi.createdAt,
+        updatedAt: keteranganTransaksi.updatedAt
+    };
 }
 
 export async function updateKeteranganTransaksiService(id: number, nama: string) {
@@ -49,7 +61,11 @@ export async function updateKeteranganTransaksiService(id: number, nama: string)
         include: { transactions: true },
     });
 
-    return updated;
+    return {
+        ...updated,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt
+    };
 }
 
 export async function deleteKeteranganTransaksiService(id: number) {
@@ -70,5 +86,9 @@ export async function deleteKeteranganTransaksiService(id: number) {
         include: { transactions: true },
     });
 
-    return deleted;
+    return {
+        ...deleted,
+        createdAt: deleted.createdAt,
+        updatedAt: deleted.updatedAt
+    };
 }

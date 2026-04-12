@@ -139,7 +139,7 @@ export function verifyEmailTemplate(nama: string, verifyUrl: string): string {
                     </p>
 
                     <div class="cta-container">
-                        <a href="${verifyUrl}" class="cta-button">Verifikasi Email Saya</a>
+                        <a href="${verifyUrl}" class="cta-button" style="color: #fff; text-decoration: none;">Verifikasi Email Saya</a>
                     </div>
 
                     <div class="alternative">

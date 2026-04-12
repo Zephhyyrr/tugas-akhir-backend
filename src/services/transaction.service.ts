@@ -16,7 +16,11 @@ export async function getAllTransactionService(page: number, limit: number) {
     const totalItems = await prisma.transaction.count();
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
-        data: transactions,
+        data: transactions.map(t => ({
+            ...t,
+            createdAt: t.createdAt,
+            updatedAt: t.updatedAt
+        })),
         meta: meta
     };
 }
@@ -34,7 +38,11 @@ export async function getTransactionByIdService(id: number) {
         throw new AppError(`Transaction dengan id: ${id}, tidak tersedia.`);
     }
 
-    return transaction;
+    return {
+        ...transaction,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt
+    };
 }
 
 export async function createTransactionService(
@@ -74,7 +82,11 @@ export async function createTransactionService(
         },
     });
 
-    return transaction;
+    return {
+        ...transaction,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt
+    };
 }
 
 export async function updateTransactionService(
@@ -102,7 +114,11 @@ export async function updateTransactionService(
         },
     });
 
-    return updated;
+    return {
+        ...updated,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt
+    };
 }
 
 export async function deleteTransactionService(id: number) {
@@ -129,5 +145,9 @@ export async function deleteTransactionService(id: number) {
         },
     });
 
-    return deleted;
+    return {
+        ...deleted,
+        createdAt: deleted.createdAt,
+        updatedAt: deleted.updatedAt
+    };
 }
