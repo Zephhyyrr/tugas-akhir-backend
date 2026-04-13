@@ -35,18 +35,18 @@ model UserToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 }
 
 model Content {
-  id        Int     @id @default(autoincrement())
-  isDeleted Boolean @default(false)
+  id        Int      @id @default(autoincrement())
+  isDeleted Boolean  @default(false)
   judul     String
-  isi       String  @db.Text
+  isi       String   @db.Text
   gambarUrl String?
   videoUrl  String?
-  status    String
+  status    String   @default("published")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -55,9 +55,9 @@ model Content {
 }
 
 model KeteranganTransaksi {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   nama      String
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -65,15 +65,15 @@ model KeteranganTransaksi {
 }
 
 model Transaction {
-  id         Int      @id @default(autoincrement())
-  saldo      Float
-  kredit     Float
-  debet      Float
-  uraian     String
-  tanggal    DateTime
-  isDeleted  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  saldo     Float
+  kredit    Float
+  debet     Float
+  uraian    String
+  tanggal   DateTime
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId Int
   user   User @relation(fields: [userId], references: [id])

@@ -6,10 +6,13 @@ import keteranganTransaksiRoutes from "./keterangan_transaksi.routes";
 import transactionRoutes from "./transaction.routes";
 import authRoutes from "./auth.routes";
 
+apiRouter.get("/health", (req, res) => {
+    res.json({ message: "API sukses berjalan" })
+});
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/users", userRoutes);
 apiRouter.use("/contents", contentRoutes);
 apiRouter.use("/keterangan-transaksi", keteranganTransaksiRoutes);
-apiRouter.use("/transactions", transactionRoutes);
+apiRouter.use("/transaksi", transactionRoutes);
 
 export default apiRouter

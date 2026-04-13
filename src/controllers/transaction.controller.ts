@@ -7,6 +7,7 @@ import {
     updateTransactionService,
     deleteTransactionService
 } from "../services/transaction.service";
+import { AppError } from "../errors/api_errors";
 import { handlerAnyError } from "../errors/api_errors";
 
 export async function getAllTransactionController(req: Request, res: Response<ResponseApiType>) {
@@ -42,7 +43,12 @@ export async function getTransactionByIdController(req: Request, res: Response<R
 
 export async function createTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { saldo, kredit, debet, uraian, tanggal, userId, keteranganTransaksiId } = req.body;
+        const { saldo, kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
+        const userId = Number((req as any).user?.id);
+
+        if (!Number.isInteger(userId)) {
+            throw new AppError("User tidak valid.");
+        }
 
         const newTransaction = await createTransactionService(
             saldo,
@@ -67,7 +73,7 @@ export async function createTransactionController(req: Request, res: Response<Re
 export async function updateTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { saldo, kredit, debet, uraian, tanggal } = req.body;
+        const { saldo, kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
 
         const updatedTransaction = await updateTransactionService(
             Number(id),
@@ -75,7 +81,8 @@ export async function updateTransactionController(req: Request, res: Response<Re
             kredit,
             debet,
             uraian,
-            new Date(tanggal)
+            new Date(tanggal),
+            keteranganTransaksiId ? Number(keteranganTransaksiId) : undefined
         );
 
         return res.status(200).json({
@@ -92,11 +99,11 @@ export async function deleteTransactionController(req: Request, res: Response<Re
     try {
         const { id } = req.params;
 
-        await deleteTransactionService(Number(id));
-
+        const deletedTransaction = await deleteTransactionService(Number(id));
+        const message = deletedTransaction.isDeleted ? `Berhasil menghapus transaction dengan uraian: ${deletedTransaction.uraian}.` : `Berhasil memulihkan transaction dengan uraian: ${deletedTransaction.uraian}.`;
         return res.status(200).json({
             success: true,
-            message: `Berhasil menghapus transaction`
+            message
         });
     } catch (error) {
         return handlerAnyError(error, res);

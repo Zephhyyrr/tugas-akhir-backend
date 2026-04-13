@@ -5,9 +5,10 @@ import {
     getContentByIdService,
     createContentService,
     updateContentService,
-    deleteContentService
+    deleteContentService,
+    publishedContentService
 } from "../services/content.service";
-import { handlerAnyError } from "../errors/api_errors";
+import { AppError, handlerAnyError } from "../errors/api_errors";
 
 export async function getAllContentController(req: Request, res: Response<ResponseApiType>) {
     try {
@@ -42,20 +43,27 @@ export async function getContentByIdController(req: Request, res: Response<Respo
 
 export async function createContentController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { judul, isi, status, userId } = req.body;
-        const baseUrl = process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:3000";
+        const { judul, isi, status } = req.body;
+        const userId = Number((req as any).user?.id);
+
+        if (!Number.isInteger(userId)) {
+            throw new AppError("User tidak valid.");
+        }
 
         const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
         
         let gambarUrls: string[] = [];
         let videoUrls: string[] = [];
 
-        if (files?.gambar) {
-            gambarUrls = files.gambar.map(file => `${baseUrl}/uploads/${file.filename}`);
+        const gambarFiles = files?.gambarUrl || files?.gambar || files?.image;
+        const videoFiles = files?.videoUrl || files?.video || files?.videos;
+
+        if (gambarFiles) {
+            gambarUrls = gambarFiles.map(file => `/uploads/${file.filename}`);
         }
 
-        if (files?.video) {
-            videoUrls = files.video.map(file => `${baseUrl}/uploads/${file.filename}`);
+        if (videoFiles) {
+            videoUrls = videoFiles.map(file => `/uploads/${file.filename}`);
         }
 
         const newContent = await createContentService(
@@ -81,19 +89,21 @@ export async function updateContentController(req: Request, res: Response<Respon
     try {
         const { id } = req.params;
         const { judul, isi, status } = req.body;
-        const baseUrl = process.env.PORT ? `http://localhost:${process.env.PORT}` : "http://localhost:3000";
 
         const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
         
         let gambarUrl: string | undefined;
         let videoUrl: string | undefined;
 
-        if (files?.gambar && files.gambar.length > 0) {
-            gambarUrl = files.gambar.map(file => `${baseUrl}/uploads/${file.filename}`).join(',');
+        const gambarFiles = files?.gambarUrl || files?.gambar || files?.image;
+        const videoFiles = files?.videoUrl || files?.video || files?.videos;
+
+        if (gambarFiles && gambarFiles.length > 0) {
+            gambarUrl = gambarFiles.map(file => `/uploads/${file.filename}`).join(',');
         }
 
-        if (files?.video && files.video.length > 0) {
-            videoUrl = files.video.map(file => `${baseUrl}/uploads/${file.filename}`).join(',');
+        if (videoFiles && videoFiles.length > 0) {
+            videoUrl = videoFiles.map(file => `/uploads/${file.filename}`).join(',');
         }
 
         const updatedContent = await updateContentService(
@@ -120,10 +130,26 @@ export async function deleteContentController(req: Request, res: Response<Respon
         const { id } = req.params;
 
         const deletedContent = await deleteContentService(Number(id));
+        const message = deletedContent.isDeleted ? `Berhasil menghapus content: ${deletedContent.judul}.` : `Berhasil memulihkan content: ${deletedContent.judul}.`;
+        return res.status(200).json({
+            success: true,
+            message
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function publishedContentController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const { id } = req.params;
+
+        const updatedContent = await publishedContentService(Number(id));
 
         return res.status(200).json({
             success: true,
-            message: `Berhasil menghapus content: ${deletedContent.judul}`
+            message: `Berhasil mengubah status content: ${updatedContent.judul} menjadi ${updatedContent.status}.`,
+            data: updatedContent
         });
     } catch (error) {
         return handlerAnyError(error, res);

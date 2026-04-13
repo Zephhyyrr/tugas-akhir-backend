@@ -35,6 +35,11 @@ export async function loginService(email: string, password: string) {
     };
 }
 
+export async function logoutService() {
+    return {
+        message: "Logout berhasil."
+    };
+}
 export async function verifyEmailService(token: string) {
     const userToken = await prisma.userToken.findUnique({
         where: { token }

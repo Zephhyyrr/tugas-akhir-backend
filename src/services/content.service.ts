@@ -45,7 +45,7 @@ export async function getContentByIdService(id: number) {
 export async function createContentService(
     judul: string,
     isi: string,
-    status: string,
+    status: string | undefined,
     userId: number,
     gambarUrl?: string,
     videoUrl?: string
@@ -59,7 +59,7 @@ export async function createContentService(
         data: {
             judul,
             isi,
-            status,
+            status: status || "published",
             userId,
             gambarUrl,
             videoUrl
@@ -124,5 +124,30 @@ export async function deleteContentService(id: number) {
         ...deleted,
         createdAt: deleted.createdAt,
         updatedAt: deleted.updatedAt
+    };
+}
+
+export async function publishedContentService(id: number) {
+    const content = await prisma.content.findUnique({
+        where: { id },
+        include: { user: true },
+    });
+
+    if (!content) {
+        throw new AppError(`Content dengan id: ${id}, tidak tersedia.`);
+    }
+
+    const newStatus = content.status === "published" ? "draft" : "published";
+
+    const updated = await prisma.content.update({
+        where: { id },
+        data: { status: newStatus },
+        include: { user: true },
+    });
+
+    return {
+        ...updated,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt
     };
 }

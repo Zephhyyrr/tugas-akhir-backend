@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ResponseApiType } from "../types/api_types";
-import { loginService, verifyEmailService, forgotPasswordService, resetPasswordService } from "../services/auth.service";
+import { loginService, logoutService, verifyEmailService, forgotPasswordService, resetPasswordService } from "../services/auth.service";
 import { handlerAnyError } from "../errors/api_errors";
 
 export async function loginController(req: Request, res: Response<ResponseApiType>) {
@@ -25,6 +25,27 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
                 user: result.user,
                 token: result.token
             }
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function logoutController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const result = await logoutService();
+        const isSecure = process.env.FRONTEND_URL?.startsWith("https");
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: isSecure,
+            sameSite: isSecure ? "none" : "lax",
+            path: "/"
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: result.message
         });
     } catch (error) {
         return handlerAnyError(error, res);

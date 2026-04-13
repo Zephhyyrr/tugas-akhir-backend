@@ -95,9 +95,20 @@ export async function updateTransactionService(
     kredit: number,
     debet: number,
     uraian: string,
-    tanggal: Date
+    tanggal: Date,
+    keteranganTransaksiId?: number
 ) {
     await getTransactionByIdService(id);
+
+    if (keteranganTransaksiId) {
+        const keteranganExists = await prisma.keteranganTransaksi.findUnique({
+            where: { id: keteranganTransaksiId }
+        });
+
+        if (!keteranganExists) {
+            throw new AppError(`Keterangan Transaksi dengan id: ${keteranganTransaksiId}, tidak tersedia.`);
+        }
+    }
 
     const updated = await prisma.transaction.update({
         where: { id },
@@ -107,6 +118,7 @@ export async function updateTransactionService(
             debet,
             uraian,
             tanggal,
+            ...(keteranganTransaksiId ? { keteranganTransaksiId } : {}),
         },
         include: {
             user: true,

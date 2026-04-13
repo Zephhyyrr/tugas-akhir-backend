@@ -18,7 +18,6 @@ export const createTransactionValidator = [
     body("debet").isFloat().withMessage("Debet harus berupa angka."),
     body("uraian").notEmpty().withMessage("Uraian wajib diisi."),
     body("tanggal").isISO8601().withMessage("Tanggal harus format ISO8601."),
-    body("userId").isInt().withMessage("userId harus berupa angka."),
     body("keteranganTransaksiId").isInt().withMessage("keteranganTransaksiId harus berupa angka."),
     validateRequest
 ];
@@ -30,6 +29,7 @@ export const updateTransactionValidator = [
     body("debet").isFloat().withMessage("Debet harus berupa angka."),
     body("uraian").notEmpty().withMessage("Uraian wajib diisi."),
     body("tanggal").isISO8601().withMessage("Tanggal harus format ISO8601."),
+    body("keteranganTransaksiId").optional().isInt().withMessage("keteranganTransaksiId harus berupa angka."),
     validateRequest
 ];
 

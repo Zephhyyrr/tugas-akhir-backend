@@ -13,13 +13,13 @@ import {
 } from "../validator/transaction.validator";
 import { jwtCheckToken } from "../middlewares/jwt_check_token";
 import { isRole } from "../middlewares/is_role";
-
+import upload from "../middlewares/upload";
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllTransactionController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getTransactionByIdController);
-router.post("/", jwtCheckToken, isRole("admin", "superadmin"), createTransactionValidator, createTransactionController);
-router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), updateTransactionValidator, updateTransactionController);
+router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createTransactionValidator, createTransactionController);
+router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateTransactionValidator, updateTransactionController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteTransactionController);
 
 export default router;

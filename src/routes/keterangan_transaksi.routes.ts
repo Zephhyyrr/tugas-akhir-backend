@@ -13,13 +13,14 @@ import {
 } from "../validator/keterangan_transaksi.validator";
 import { jwtCheckToken } from "../middlewares/jwt_check_token";
 import { isRole } from "../middlewares/is_role";
+import upload from "../middlewares/upload";
 
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllKeteranganTransaksiController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getKeteranganTransaksiByIdController);
-router.post("/", jwtCheckToken, isRole("admin", "superadmin"), createKeteranganTransaksiValidator, createKeteranganTransaksiController);
-router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), updateKeteranganTransaksiValidator, updateKeteranganTransaksiController);
+router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createKeteranganTransaksiValidator, createKeteranganTransaksiController);
+router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateKeteranganTransaksiValidator, updateKeteranganTransaksiController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteKeteranganTransaksiController);
 
 export default router;

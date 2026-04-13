@@ -78,10 +78,10 @@ export async function deleteKeteranganTransaksiController(req: Request, res: Res
         const { id } = req.params;
 
         const deletedKeteranganTransaksi = await deleteKeteranganTransaksiService(Number(id));
-
+        const message = deletedKeteranganTransaksi.isDeleted ? `Berhasil menghapus keterangan transaksi: ${deletedKeteranganTransaksi.nama}.` : `Berhasil memulihkan keterangan transaksi: ${deletedKeteranganTransaksi.nama}.`;
         return res.status(200).json({
             success: true,
-            message: `Berhasil menghapus keterangan transaksi: ${deletedKeteranganTransaksi.nama}`
+            message
         });
     } catch (error) {
         return handlerAnyError(error, res);

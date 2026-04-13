@@ -4,7 +4,8 @@ import {
     getContentByIdController,
     createContentController,
     updateContentController,
-    deleteContentController
+    deleteContentController,
+    publishedContentController
 } from "../controllers/content.controller";
 import {
     createContentValidator,
@@ -19,8 +20,9 @@ const router = Router();
 
 router.get("/", getAllContentController);
 router.get("/:id", idValidator, getContentByIdController);
-router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'image', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), validateUploadSizeByType, createContentValidator, createContentController);
-router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'image', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), validateUploadSizeByType, updateContentValidator, updateContentController);
+router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 5 }]), validateUploadSizeByType, createContentValidator, createContentController);
+router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 5 }]), validateUploadSizeByType, updateContentValidator, updateContentController);
+router.patch("/:id/published", jwtCheckToken, isRole("admin", "superadmin"), idValidator, publishedContentController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteContentController);
 
 export default router;

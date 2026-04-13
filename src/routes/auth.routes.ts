@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
     loginController,
+    logoutController,
     verifyEmailController,
     forgotPasswordController,
     resetPasswordController
@@ -14,6 +15,7 @@ import {
 const router = Router();
 
 router.post("/login", loginValidator, loginController);
+router.post("/logout", logoutController);
 router.get("/verify-email", verifyEmailController);
 router.post("/forgot-password", forgotPasswordValidator, forgotPasswordController);
 router.post("/reset-password", resetPasswordValidator, resetPasswordController);

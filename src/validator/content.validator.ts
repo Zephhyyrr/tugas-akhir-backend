@@ -15,8 +15,7 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
 export const createContentValidator = [
     body("judul").notEmpty().withMessage("Judul wajib diisi."),
     body("isi").notEmpty().withMessage("Isi wajib diisi."),
-    body("status").notEmpty().withMessage("Status wajib diisi."),
-    body("userId").isInt().withMessage("userId harus berupa angka."),
+    body("status").optional().isString().withMessage("Status harus berupa string."),
     body("gambarUrl").optional().isString().withMessage("gambarUrl harus berupa string."),
     body("videoUrl").optional().isString().withMessage("videoUrl harus berupa string."),
     validateRequest
@@ -26,7 +25,7 @@ export const updateContentValidator = [
     param("id").isInt().withMessage("ID harus berupa angka."),
     body("judul").notEmpty().withMessage("Judul wajib diisi."),
     body("isi").notEmpty().withMessage("Isi wajib diisi."),
-    body("status").notEmpty().withMessage("Status wajib diisi."),
+    body("status").optional().isString().withMessage("Status harus berupa string."),
     body("gambarUrl").optional().isString().withMessage("gambarUrl harus berupa string."),
     body("videoUrl").optional().isString().withMessage("videoUrl harus berupa string."),
     validateRequest

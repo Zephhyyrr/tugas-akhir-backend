@@ -21,7 +21,7 @@ app.use(cors({
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use((req, res, next) => {
-    if (req.method === 'PUT' || req.originalUrl.includes('/photo')) {
+    if (req.is('multipart/form-data') || req.method === 'PUT' || req.originalUrl.includes('/photo')) {
         return next();
     }
     
