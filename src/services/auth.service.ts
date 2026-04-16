@@ -142,8 +142,11 @@ export async function resetPasswordService(token: string, newPassword: string) {
 }
 
 const sendResetPasswordEmail = async (email: string, nama: string, token: string) => {
-    const resetUrl = `${process.env.APP_URL || 'http://localhost:3000'}/api/auth/reset-password?token=${token}`;
-    const htmlContent = resetPasswordTemplate(nama, resetUrl);
+    const frontendBaseUrl = process.env.FRONTEND_URL || "http://localhost:3001";
+    const resetUrl = new URL("/reset-password", frontendBaseUrl);
+    resetUrl.searchParams.set("token", token);
+
+    const htmlContent = resetPasswordTemplate(nama, resetUrl.toString());
     const mailOptions = {
         from: `"Aplikasi Saya" <${process.env.SMTP_USER}>`,
         to: email,
