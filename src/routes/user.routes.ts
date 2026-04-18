@@ -8,9 +8,9 @@ const router = Router();
 
 router.get("/", jwtCheckToken, isRole("superadmin"), getAlluserController);
 router.get("/:id", jwtCheckToken, isRole("superadmin", "admin"), idValidator, getUserByIdController);
-router.post("/", jwtCheckToken, isRole("superadmin"), createUserValidator, createUserController);
-router.put("/:id", jwtCheckToken, isRole("superadmin"), updateUserValidator, updateUserController);
-router.patch("/:id/active", jwtCheckToken, isRole("superadmin"), idValidator, toggleUserActiveController);
+router.post("/", jwtCheckToken, isRole("superadmin"), upload.none(), createUserValidator, createUserController);
+router.put("/:id", jwtCheckToken, isRole("superadmin"), upload.none(), updateUserValidator, updateUserController);
+router.patch("/:id/activate", jwtCheckToken, isRole("superadmin"), idValidator, toggleUserActiveController);
 router.delete("/:id", jwtCheckToken, isRole("superadmin"), idValidator, deleteUserController);
 router.patch("/:id/photo", jwtCheckToken, isRole("superadmin", "admin"), updatePhotoValidator, upload.single("fotoProfile"), validateUploadSizeByType, updatePhotoProfileController);
 
