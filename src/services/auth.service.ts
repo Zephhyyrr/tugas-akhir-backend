@@ -12,6 +12,10 @@ export async function loginService(email: string, password: string) {
         throw new AppError("Email atau password salah.");
     }
 
+    if (!user.isActive) {
+        throw new AppError("Akun Anda dinonaktifkan. Silakan hubungi admin.");
+    }
+
     if (!user.isVerified) {
         throw new AppError("Email belum diverifikasi. Cek inbox email Anda.");
     }

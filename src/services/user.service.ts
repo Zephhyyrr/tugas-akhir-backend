@@ -6,6 +6,19 @@ import { hashing } from "../utils/bcrypt";
 import { generateToken } from "../utils/jwt";
 import { transporter } from "../config/mail";
 import { verifyEmailTemplate } from "../templates/email/verify_email";
+
+const userResponseSelect = {
+    id: true,
+    email: true,
+    nama: true,
+    role: true,
+    fotoProfile: true,
+    isActive: true,
+    isVerified: true,
+    createdAt: true,
+    updatedAt: true
+} as const;
+
 export async function getAllUserService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const users = await prisma.user.findMany({
@@ -13,14 +26,7 @@ export async function getAllUserService(page: number, limit: number) {
         take,
         where: { isDeleted: false },
         select: {
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
+            ...userResponseSelect
         }
     });
 
@@ -38,16 +44,7 @@ export async function getByIdService(params: { id: number }) {
     const { id } = params;
     const user = await prisma.user.findUnique({
         where: { id: Number(id) },
-        select: {  
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
-        }
+        select: userResponseSelect
     });
     return user;
 }
@@ -55,16 +52,7 @@ export async function getByIdService(params: { id: number }) {
 export async function getUserByIdService(id: number) {
     const user = await prisma.user.findUnique({
         where: { id: Number(id) },
-        select: {  
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
-        }
+        select: userResponseSelect
     });
     return user;
 }
@@ -94,7 +82,8 @@ export async function createUserService(
                 password: hashedPassword,
                 role,
                 fotoProfile
-            }
+            },
+            select: userResponseSelect
         });
 
         const token = await generateToken({ 
@@ -124,12 +113,7 @@ export async function createUserService(
         console.error(error);
     }
 
-    const { password: _, ...userWithoutPassword } = result.user;
-    return {
-        ...userWithoutPassword,
-        createdAt: result.user.createdAt,
-        updatedAt: result.user.updatedAt
-    };
+    return result.user;
 }
 
 export async function updateUserService(
@@ -166,19 +150,62 @@ export async function updateUserService(
     const updated = await prisma.user.update({
         where: { id },
         data,
-        select: {
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
-        }
+        select: userResponseSelect
     });
 
     return updated;
+}
+
+export async function userActiveService(id: number) {
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+        throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
+    }
+
+    const newActiveStatus = !user.isActive;
+
+    const updatedUser = await prisma.user.update({
+        where: { id },
+        data: {
+            isActive: newActiveStatus,
+            isVerified: false
+        },
+        select: userResponseSelect
+    });
+
+    await prisma.userToken.deleteMany({ where: { userId: id } });
+
+    if (newActiveStatus) {
+        const token = await generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            nama: user.nama
+        });
+
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
+
+        await prisma.userToken.create({
+            data: {
+                userId: user.id,
+                token,
+                expiresAt
+            }
+        });
+
+        try {
+            await sendVerificationEmail(updatedUser.email, updatedUser.nama, token);
+        } catch (error) {
+            console.error("Gagal mengirim ulang email verifikasi:", error);
+        }
+    }
+
+    return {
+        user: updatedUser,
+        action: newActiveStatus ? "activate" : "deactivate"
+    };
 }
 
 export async function deleteUserService(id: number) {
@@ -193,16 +220,7 @@ export async function deleteUserService(id: number) {
     const result = await prisma.user.update({
         where: { id },
         data: { isDeleted: newDeletedStatus },
-        select: {
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
-        }
+        select: userResponseSelect
     });
 
     if (!newDeletedStatus) {
@@ -252,23 +270,17 @@ export async function updatePhotoProfileService(params: { id: number; fotoProfil
     const updated = await prisma.user.update({
         where: { id },
         data: { fotoProfile },
-        select: {
-            id: true,
-            email: true,
-            nama: true,
-            role: true,
-            fotoProfile: true,
-            isVerified: true,
-            createdAt: true,
-            updatedAt: true
-        }
+        select: userResponseSelect
     });
     return updated;
 }
 
 const sendVerificationEmail = async (email: string, nama: string, token: string) => {
-    const verifyUrl = `${process.env.PORT || 'http://localhost:3000'}/api/auth/verify-email?token=${token}`;
-    const htmlContent = verifyEmailTemplate(nama, verifyUrl);
+    const backendBaseUrl = process.env.API_BACKEND || "http://localhost:3000";
+    const verifyUrl = new URL("/api/auth/verify-email", backendBaseUrl);
+    verifyUrl.searchParams.set("token", token);
+
+    const htmlContent = verifyEmailTemplate(nama, verifyUrl.toString());
     const mailOptions = {
         from: `"Aplikasi Saya" <${process.env.SMTP_USER}>`,
         to: email,
