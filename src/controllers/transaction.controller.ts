@@ -5,7 +5,8 @@ import {
     getTransactionByIdService,
     createTransactionService,
     updateTransactionService,
-    deleteTransactionService
+    deleteTransactionService,
+    getDraftTransactionService
 } from "../services/transaction.service";
 import { AppError } from "../errors/api_errors";
 import { handlerAnyError } from "../errors/api_errors";
@@ -104,6 +105,22 @@ export async function deleteTransactionController(req: Request, res: Response<Re
         return res.status(200).json({
             success: true,
             message
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getDraftTransactionController(req: Request, res: Response<ResponseApiType>) { 
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const draftTransactions = await getDraftTransactionService(page, limit);
+        return res.status(200).json({
+            success: true,
+            message: "Berhasil mendapatkan daftar transaction draft.",
+            data: draftTransactions.data,
+            meta: draftTransactions.meta
         });
     } catch (error) {
         return handlerAnyError(error, res);

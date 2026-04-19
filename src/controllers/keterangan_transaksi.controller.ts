@@ -5,7 +5,8 @@ import {
     getKeteranganTransaksiByIdService,
     createKeteranganTransaksiService,
     updateKeteranganTransaksiService,
-    deleteKeteranganTransaksiService
+    deleteKeteranganTransaksiService,
+    getDraftKeteranganTransaksiService
 } from "../services/keterangan_transaksi.service";
 import { handlerAnyError } from "../errors/api_errors";
 
@@ -82,6 +83,21 @@ export async function deleteKeteranganTransaksiController(req: Request, res: Res
         return res.status(200).json({
             success: true,
             message
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getDraftKeteranganTransaksiController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const draftKeteranganTransaksi = await getDraftKeteranganTransaksiService(page, limit);
+        return res.status(200).json({
+            success: true,
+            message: "Mendapatkan data keterangan transaksi yang dihapus.",
+            data: draftKeteranganTransaksi
         });
     } catch (error) {
         return handlerAnyError(error, res);

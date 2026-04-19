@@ -7,13 +7,16 @@ export async function getAllTransactionService(page: number, limit: number) {
     const transactions = await prisma.transaction.findMany({
         skip,
         take,
+        where: { isDeleted: false },
         include: {
             user: true,
             keteranganTransaksi: true,
         },
     });
 
-    const totalItems = await prisma.transaction.count();
+    const totalItems = await prisma.transaction.count({
+        where: { isDeleted: false },
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: transactions.map(t => ({
@@ -161,5 +164,30 @@ export async function deleteTransactionService(id: number) {
         ...deleted,
         createdAt: deleted.createdAt,
         updatedAt: deleted.updatedAt
+    };
+}
+
+export async function getDraftTransactionService(page: number, limit: number) {
+    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
+    const transactions = await prisma.transaction.findMany({
+        skip,
+        take,
+        where: { isDeleted: true },
+        include: {
+            user: true,
+            keteranganTransaksi: true,
+        },
+    });
+    const totalItems = await prisma.transaction.count({
+        where: { isDeleted: true },
+    });
+    const meta = getPagingData(totalItems, pageNumber, pageSize);
+    return {
+        data: transactions.map(t => ({
+            ...t,
+            createdAt: t.createdAt,
+            updatedAt: t.updatedAt
+        })),
+        meta: meta
     };
 }

@@ -40,6 +40,29 @@ export async function getAllUserService(page: number, limit: number) {
     };
 }
 
+export async function getDraftUserService(page: number, limit: number) {
+    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
+    const users = await prisma.user.findMany({
+        skip,
+        take,
+        where: { isDeleted: true },
+        select: {
+            ...userResponseSelect
+        }
+    });
+
+    const totalItems = await prisma.user.count({
+        where: { isDeleted: true }
+    });
+
+    const meta = getPagingData(totalItems, pageNumber, pageSize);
+
+    return {
+        data: users,
+        meta
+    };
+}
+
 export async function getByIdService(params: { id: number }) {
     const { id } = params;
     const user = await prisma.user.findUnique({
@@ -86,8 +109,8 @@ export async function createUserService(
             select: userResponseSelect
         });
 
-        const token = await generateToken({ 
-            id: user.id, 
+        const token = await generateToken({
+            id: user.id,
             email: user.email,
             role: user.role,
             nama: user.nama
@@ -210,32 +233,35 @@ export async function userActiveService(id: number) {
 
 export async function deleteUserService(id: number) {
     const user = await prisma.user.findUnique({ where: { id } });
-    
+
     if (!user) {
         throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
     }
 
     const newDeletedStatus = !user.isDeleted;
-    
+
     const result = await prisma.user.update({
         where: { id },
-        data: { isDeleted: newDeletedStatus },
+        data: {
+            isDeleted: newDeletedStatus,
+            isActive: !newDeletedStatus
+        },
         select: userResponseSelect
     });
 
     if (!newDeletedStatus) {
-        const token = await generateToken({ 
-            id: user.id, 
+        const token = await generateToken({
+            id: user.id,
             email: user.email,
             role: user.role,
             nama: user.nama
         });
-        
+
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 24);
 
         await prisma.userToken.deleteMany({ where: { userId: id } });
-        
+
         await prisma.userToken.create({
             data: {
                 userId: user.id,
@@ -255,6 +281,16 @@ export async function deleteUserService(id: number) {
         user: result,
         action: newDeletedStatus ? 'delete' : 'undelete'
     };
+}
+
+export async function deletePermanentUserService(id: number) {
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+        throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
+    }
+
+    await prisma.user.delete({ where: { id } });
 }
 
 const findUserById = async (id: number) => {

@@ -5,7 +5,8 @@ import {
     createContentController,
     updateContentController,
     deleteContentController,
-    publishedContentController
+    publishedContentController,
+    getDraftContentController
 } from "../controllers/content.controller";
 import {
     createContentValidator,
@@ -19,6 +20,7 @@ import upload, { validateUploadSizeByType } from "../middlewares/upload";
 const router = Router();
 
 router.get("/", getAllContentController);
+router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftContentController);
 router.get("/:id", idValidator, getContentByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 5 }]), validateUploadSizeByType, createContentValidator, createContentController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 5 }]), validateUploadSizeByType, updateContentValidator, updateContentController);

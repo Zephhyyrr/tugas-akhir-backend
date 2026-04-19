@@ -1,12 +1,15 @@
 import { Router } from "express";
-import {getAlluserController, createUserController, getUserByIdController, updateUserController, deleteUserController, updatePhotoProfileController, toggleUserActiveController} from "../controllers/user.controller";
+import {getAlluserController, createUserController, getDraftUserController, getUserByIdController, updateUserController, deleteUserController, updatePhotoProfileController, toggleUserActiveController} from "../controllers/user.controller";
 import {createUserValidator,updateUserValidator, idValidator, updatePhotoValidator} from "../validator/user.validator";
 import upload, { validateUploadSizeByType } from "../middlewares/upload";
 import { jwtCheckToken } from "../middlewares/jwt_check_token";
 import { isRole } from "../middlewares/is_role";
+import { meController } from "../controllers/auth.controller";
 const router = Router();
 
+router.get("/me", jwtCheckToken, meController);
 router.get("/", jwtCheckToken, isRole("superadmin"), getAlluserController);
+router.get("/draft", jwtCheckToken, isRole("superadmin"), getDraftUserController);
 router.get("/:id", jwtCheckToken, isRole("superadmin", "admin"), idValidator, getUserByIdController);
 router.post("/", jwtCheckToken, isRole("superadmin"), upload.none(), createUserValidator, createUserController);
 router.put("/:id", jwtCheckToken, isRole("superadmin"), upload.none(), updateUserValidator, updateUserController);

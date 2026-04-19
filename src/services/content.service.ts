@@ -127,6 +127,28 @@ export async function deleteContentService(id: number) {
     };
 }
 
+export async function getDraftContentService(page: number, limit: number) {
+    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
+    const contents = await prisma.content.findMany({
+        where: { isDeleted: true },
+        skip,
+        take,
+        include: { user: true },
+    });
+    const totalItems = await prisma.content.count({
+        where: { isDeleted: true },
+    });
+    const meta = getPagingData(totalItems, pageNumber, pageSize);
+    return {
+        data: contents.map(c => ({
+            ...c,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt
+        })),
+        meta: meta
+    };
+}
+
 export async function publishedContentService(id: number) {
     const content = await prisma.content.findUnique({
         where: { id },

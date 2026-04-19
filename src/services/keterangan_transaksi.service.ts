@@ -92,3 +92,26 @@ export async function deleteKeteranganTransaksiService(id: number) {
         updatedAt: deleted.updatedAt
     };
 }
+
+export async function getDraftKeteranganTransaksiService(page: number, limit: number) {
+    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
+    const keteranganTransaksi = await prisma.keteranganTransaksi.findMany({
+        where: { isDeleted: true },
+        skip,
+        take,
+        include: { transactions: true },
+    });
+    const totalItems = await prisma.keteranganTransaksi.count({
+        where: { isDeleted: true },
+    });
+    const meta = getPagingData(totalItems, pageNumber, pageSize);
+    return {
+        data: keteranganTransaksi.map(kt => ({
+            ...kt,
+            createdAt: kt.createdAt,
+            updatedAt: kt.updatedAt
+        })),
+        meta: meta
+    };
+}
+

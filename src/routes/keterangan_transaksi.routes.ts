@@ -4,7 +4,8 @@ import {
     getKeteranganTransaksiByIdController,
     createKeteranganTransaksiController,
     updateKeteranganTransaksiController,
-    deleteKeteranganTransaksiController
+    deleteKeteranganTransaksiController,
+    getDraftKeteranganTransaksiController
 } from "../controllers/keterangan_transaksi.controller";
 import {
     createKeteranganTransaksiValidator,
@@ -18,6 +19,7 @@ import upload from "../middlewares/upload";
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllKeteranganTransaksiController);
+router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftKeteranganTransaksiController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getKeteranganTransaksiByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createKeteranganTransaksiValidator, createKeteranganTransaksiController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateKeteranganTransaksiValidator, updateKeteranganTransaksiController);

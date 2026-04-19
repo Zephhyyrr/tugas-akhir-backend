@@ -6,7 +6,8 @@ import {
     createContentService,
     updateContentService,
     deleteContentService,
-    publishedContentService
+    publishedContentService,
+    getDraftContentService
 } from "../services/content.service";
 import { AppError, handlerAnyError } from "../errors/api_errors";
 
@@ -136,6 +137,23 @@ export async function deleteContentController(req: Request, res: Response<Respon
             message
         });
     } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getDraftContentController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const draftContents = await getDraftContentService(page, limit);
+        return res.status(200).json({
+            success: true,
+            message: "Berhasil mendapatkan daftar content draft.",
+            data: draftContents.data,
+            meta: draftContents.meta
+        });
+    }
+        catch (error) {
         return handlerAnyError(error, res);
     }
 }

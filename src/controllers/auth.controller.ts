@@ -14,7 +14,7 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict' as const,
-            maxAge: 1 * 24 * 60 * 60 * 1000 // 1 hari
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 hari (sesuai JWT expiry)
         };
 
         res.cookie('token', result.token, cookieOptions);
@@ -55,6 +55,8 @@ export async function logoutController(req: Request, res: Response<ResponseApiTy
 
 export async function meController(req: Request, res: Response<ResponseApiType>) {
     try {
+        res.set("Cache-Control", "no-store")
+
         const userId = req.user?.id;
 
         if (!userId) {
