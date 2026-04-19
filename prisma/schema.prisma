@@ -52,7 +52,7 @@ model Content {
   updatedAt DateTime @updatedAt
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model KeteranganTransaksi {
@@ -77,10 +77,10 @@ model Transaction {
   updatedAt DateTime @updatedAt
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   keteranganTransaksiId Int
-  keteranganTransaksi   KeteranganTransaksi @relation(fields: [keteranganTransaksiId], references: [id])
+  keteranganTransaksi   KeteranganTransaksi @relation(fields: [keteranganTransaksiId], references: [id], onDelete: Cascade)
 }
 
 model Prediction {

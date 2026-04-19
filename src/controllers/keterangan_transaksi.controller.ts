@@ -6,6 +6,7 @@ import {
     createKeteranganTransaksiService,
     updateKeteranganTransaksiService,
     deleteKeteranganTransaksiService,
+    deletePermanentKeteranganTransaksiService,
     getDraftKeteranganTransaksiService
 } from "../services/keterangan_transaksi.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -83,6 +84,21 @@ export async function deleteKeteranganTransaksiController(req: Request, res: Res
         return res.status(200).json({
             success: true,
             message
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function deletePermanentKeteranganTransaksiController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const { id } = req.params;
+
+        await deletePermanentKeteranganTransaksiService(Number(id));
+
+        return res.status(200).json({
+            success: true,
+            message: "Berhasil menghapus permanen keterangan transaksi."
         });
     } catch (error) {
         return handlerAnyError(error, res);

@@ -167,6 +167,22 @@ export async function deleteTransactionService(id: number) {
     };
 }
 
+export async function deletePermanentTransactionService(id: number) {
+    const transaction = await prisma.transaction.findUnique({
+        where: { id },
+    });
+
+    if (!transaction) {
+        throw new AppError(`Transaction dengan id: ${id}, tidak tersedia.`);
+    }
+
+    if (!transaction.isDeleted) {
+        throw new AppError(`Transaction dengan id: ${id} belum dihapus (soft delete).`);
+    }
+
+    await prisma.transaction.delete({ where: { id } });
+}
+
 export async function getDraftTransactionService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const transactions = await prisma.transaction.findMany({

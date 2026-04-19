@@ -290,6 +290,10 @@ export async function deletePermanentUserService(id: number) {
         throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
     }
 
+    if (!user.isDeleted) {
+        throw new AppError(`User dengan id: ${id} belum dihapus (soft delete).`);
+    }
+
     await prisma.user.delete({ where: { id } });
 }
 

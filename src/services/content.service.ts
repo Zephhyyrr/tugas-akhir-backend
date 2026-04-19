@@ -127,6 +127,22 @@ export async function deleteContentService(id: number) {
     };
 }
 
+export async function deletePermanentContentService(id: number) {
+    const content = await prisma.content.findUnique({
+        where: { id },
+    });
+
+    if (!content) {
+        throw new AppError(`Content dengan id: ${id}, tidak tersedia.`);
+    }
+
+    if (!content.isDeleted) {
+        throw new AppError(`Content dengan id: ${id} belum dihapus (soft delete).`);
+    }
+
+    await prisma.content.delete({ where: { id } });
+}
+
 export async function getDraftContentService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const contents = await prisma.content.findMany({

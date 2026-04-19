@@ -1,0 +1,17 @@
+-- DropForeignKey
+ALTER TABLE "Content" DROP CONSTRAINT "Content_userId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "Transaction" DROP CONSTRAINT "Transaction_keteranganTransaksiId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "Transaction" DROP CONSTRAINT "Transaction_userId_fkey";
+
+-- AddForeignKey
+ALTER TABLE "Content" ADD CONSTRAINT "Content_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_keteranganTransaksiId_fkey" FOREIGN KEY ("keteranganTransaksiId") REFERENCES "KeteranganTransaksi"("id") ON DELETE CASCADE ON UPDATE CASCADE;

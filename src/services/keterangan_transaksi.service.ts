@@ -93,6 +93,22 @@ export async function deleteKeteranganTransaksiService(id: number) {
     };
 }
 
+export async function deletePermanentKeteranganTransaksiService(id: number) {
+    const keteranganTransaksi = await prisma.keteranganTransaksi.findUnique({
+        where: { id },
+    });
+
+    if (!keteranganTransaksi) {
+        throw new AppError(`Keterangan Transaksi dengan id: ${id}, tidak tersedia.`);
+    }
+
+    if (!keteranganTransaksi.isDeleted) {
+        throw new AppError(`Keterangan Transaksi dengan id: ${id} belum dihapus (soft delete).`);
+    }
+
+    await prisma.keteranganTransaksi.delete({ where: { id } });
+}
+
 export async function getDraftKeteranganTransaksiService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const keteranganTransaksi = await prisma.keteranganTransaksi.findMany({

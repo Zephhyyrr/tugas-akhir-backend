@@ -3,6 +3,7 @@ import { ResponseApiType } from "../types/api_types";
 import { 
     createUserService, 
     deleteUserService, 
+    deletePermanentUserService,
     getAllUserService,
     getDraftUserService,
     getUserByIdService,
@@ -170,6 +171,28 @@ export async function updatePhotoProfileController(req: Request, res: Response<R
             success: true,
             message: `Berhasil mengupdate foto profil user: ${updatedUser.nama}.`,
             data: updatedUser
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function deletePermanentUserController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const { id } = req.params;
+
+        if (Number(id) === req.user?.id) {
+            return res.status(400).json({
+                success: false,
+                message: "Tidak bisa menghapus permanen akun sendiri."
+            });
+        }
+
+        await deletePermanentUserService(Number(id));
+
+        return res.status(200).json({
+            success: true,
+            message: "Berhasil menghapus permanen user."
         });
     } catch (error) {
         return handlerAnyError(error, res);

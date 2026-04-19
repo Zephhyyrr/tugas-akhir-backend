@@ -5,6 +5,7 @@ import {
     createKeteranganTransaksiController,
     updateKeteranganTransaksiController,
     deleteKeteranganTransaksiController,
+    deletePermanentKeteranganTransaksiController,
     getDraftKeteranganTransaksiController
 } from "../controllers/keterangan_transaksi.controller";
 import {
@@ -24,5 +25,6 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createKeteranganTransaksiValidator, createKeteranganTransaksiController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateKeteranganTransaksiValidator, updateKeteranganTransaksiController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteKeteranganTransaksiController);
+router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentKeteranganTransaksiController);
 
 export default router;
