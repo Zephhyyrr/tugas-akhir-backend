@@ -14,7 +14,7 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict' as const,
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 hari (sesuai JWT expiry)
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 hari
         };
 
         res.cookie('token', result.token, cookieOptions);
@@ -55,7 +55,7 @@ export async function logoutController(req: Request, res: Response<ResponseApiTy
 
 export async function meController(req: Request, res: Response<ResponseApiType>) {
     try {
-        res.set("Cache-Control", "no-store")
+        res.set("Cache-Control", "no-store");
 
         const userId = req.user?.id;
 
@@ -88,61 +88,37 @@ export async function meController(req: Request, res: Response<ResponseApiType>)
 export async function verifyEmailController(req: Request, res: Response) {
     try {
         const { token } = req.query;
-        const isLocalhost = req.hostname === "localhost" || req.hostname === "127.0.0.1" || req.hostname.startsWith("0.0");
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
 
         if (!token || typeof token !== "string") {
-            if (isLocalhost) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Token verifikasi tidak ditemukan."
-                });
-            }
-            
-            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-            return res.redirect(`${frontendUrl}/verify-error?message=Token+tidak+ditemukan`);
+            return res.redirect(`${frontendUrl}/auth/login?verify=invalid&message=Token+tidak+ditemukan`);
         }
 
         try {
             const user = await verifyEmailService(token);
-
-            if (isLocalhost) {
-                return res.status(200).json({
-                    success: true,
-                    message: "Email berhasil diverifikasi!",
-                    data: user
-                });
-            }
-
-            const frontendLoginUrl = process.env.FRONTEND_URL
-                ? `${process.env.FRONTEND_URL}/login?verified=true`
-                : "http://localhost:3001/login?verified=true";
-
-            return res.redirect(frontendLoginUrl);
+            
+            return res.redirect(`${frontendUrl}/auth/login?verify=success&email=${encodeURIComponent(user.email)}`);
 
         } catch (serviceError: any) {
             throw serviceError;
         }
 
     } catch (error: any) {
-        const isLocalhost = req.hostname === "localhost" || req.hostname === "127.0.0.1" || req.hostname.startsWith("0.0");
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
         const errorMsg = error.message || "Gagal memverifikasi email.";
         
         console.error("[Verify Email Error]", {
-            hostname: req.hostname,
-            isLocalhost,
             error: errorMsg
         });
-        
-        if (isLocalhost) {
-            return res.status(400).json({
-                success: false,
-                message: errorMsg
-            });
+
+        let verifyStatus = "failed";
+        if (errorMsg.includes("kedaluwarsa")) {
+            verifyStatus = "expired";
+        } else if (errorMsg.includes("tidak valid")) {
+            verifyStatus = "invalid";
         }
 
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-        const errorMessage = encodeURIComponent(errorMsg);
-        return res.redirect(`${frontendUrl}/verify-error?message=${errorMessage}`);
+        return res.redirect(`${frontendUrl}/auth/login?verify=${verifyStatus}&message=${encodeURIComponent(errorMsg)}`);
     }
 }
 
@@ -163,69 +139,41 @@ export async function forgotPasswordController(req: Request, res: Response<Respo
 
 export async function resetPasswordController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { token } = req.query;
+        const { token } = req.body;
         const { newPassword } = req.body;
-        const isLocalhost = req.hostname === "localhost" || req.hostname === "127.0.0.1" || req.hostname.startsWith("0.0");
 
         if (!token || typeof token !== "string") {
-            if (isLocalhost) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Token tidak ditemukan."
-                });
-            }
-
-            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-            return res.redirect(`${frontendUrl}/reset-error?message=Token+tidak+ditemukan`);
+            return res.status(400).json({
+                success: false,
+                message: "Token tidak ditemukan."
+            });
         }
 
         if (!newPassword || newPassword.length < 6) {
-            if (isLocalhost) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Password minimal 6 karakter."
-                });
-            }
-
-            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-            return res.redirect(`${frontendUrl}/reset-error?message=Password+minimal+6+karakter`);
+            return res.status(400).json({
+                success: false,
+                message: "Password minimal 6 karakter."
+            });
         }
 
         const result = await resetPasswordService(token, newPassword);
 
-        if (isLocalhost) {
-            return res.status(200).json({
-                success: true,
-                message: result.message,
-                data: result.user
-            });
-        }
-
-        const frontendLoginUrl = process.env.FRONTEND_URL
-            ? `${process.env.FRONTEND_URL}/login?reset=success`
-            : "http://localhost:3001/login?reset=success";
-
-        return res.redirect(frontendLoginUrl);
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+            data: result.user
+        });
 
     } catch (error: any) {
-        const isLocalhost = req.hostname === "localhost" || req.hostname === "127.0.0.1" || req.hostname.startsWith("0.0");
         const errorMsg = error.message || "Gagal mereset password.";
 
         console.error("[Reset Password Error]", {
-            hostname: req.hostname,
-            isLocalhost,
             error: errorMsg
         });
 
-        if (isLocalhost) {
-            return res.status(400).json({
-                success: false,
-                message: errorMsg
-            });
-        }
-
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
-        const errorMessage = encodeURIComponent(errorMsg);
-        return res.redirect(`${frontendUrl}/reset-error?message=${errorMessage}`);
+        return res.status(400).json({
+            success: false,
+            message: errorMsg
+        });
     }
 }
