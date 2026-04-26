@@ -2,6 +2,19 @@ import prisma from "../config/prisma";
 import { AppError } from "../errors/api_errors";
 import { getPagination, getPagingData } from "../utils/pagination";
 
+const toAmount = (value: unknown) => {
+    if (value === undefined || value === null || value === "") {
+        return 0;
+    }
+
+    const amount = typeof value === "number" ? value : Number(value);
+    if (Number.isNaN(amount)) {
+        throw new AppError("Nilai transaksi harus berupa angka.");
+    }
+
+    return amount;
+};
+
 export async function getAllTransactionService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const transactions = await prisma.transaction.findMany({
@@ -49,7 +62,6 @@ export async function getTransactionByIdService(id: number) {
 }
 
 export async function createTransactionService(
-    saldo: number,
     kredit: number,
     debet: number,
     uraian: string,
@@ -57,6 +69,9 @@ export async function createTransactionService(
     userId: number,
     keteranganTransaksiId: number
 ) {
+    const normalizedKredit = toAmount(kredit);
+    const normalizedDebet = toAmount(debet);
+
     const userExists = await prisma.user.findUnique({ where: { id: userId } });
     if (!userExists) {
         throw new AppError(`User dengan id: ${userId}, tidak tersedia.`);
@@ -71,9 +86,9 @@ export async function createTransactionService(
 
     const transaction = await prisma.transaction.create({
         data: {
-            saldo,
-            kredit,
-            debet,
+            saldo: normalizedKredit - normalizedDebet,
+            kredit: normalizedKredit,
+            debet: normalizedDebet,
             uraian,
             tanggal,
             userId,
@@ -94,7 +109,6 @@ export async function createTransactionService(
 
 export async function updateTransactionService(
     id: number,
-    saldo: number,
     kredit: number,
     debet: number,
     uraian: string,
@@ -102,6 +116,9 @@ export async function updateTransactionService(
     keteranganTransaksiId?: number
 ) {
     await getTransactionByIdService(id);
+
+    const normalizedKredit = toAmount(kredit);
+    const normalizedDebet = toAmount(debet);
 
     if (keteranganTransaksiId) {
         const keteranganExists = await prisma.keteranganTransaksi.findUnique({
@@ -116,9 +133,9 @@ export async function updateTransactionService(
     const updated = await prisma.transaction.update({
         where: { id },
         data: {
-            saldo,
-            kredit,
-            debet,
+            saldo: normalizedKredit - normalizedDebet,
+            kredit: normalizedKredit,
+            debet: normalizedDebet,
             uraian,
             tanggal,
             ...(keteranganTransaksiId ? { keteranganTransaksiId } : {}),

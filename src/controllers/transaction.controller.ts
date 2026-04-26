@@ -45,7 +45,7 @@ export async function getTransactionByIdController(req: Request, res: Response<R
 
 export async function createTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { saldo, kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
+        const { kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
         const userId = Number((req as any).user?.id);
 
         if (!Number.isInteger(userId)) {
@@ -53,7 +53,6 @@ export async function createTransactionController(req: Request, res: Response<Re
         }
 
         const newTransaction = await createTransactionService(
-            saldo,
             kredit,
             debet,
             uraian,
@@ -75,11 +74,10 @@ export async function createTransactionController(req: Request, res: Response<Re
 export async function updateTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { saldo, kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
+        const { kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
 
         const updatedTransaction = await updateTransactionService(
             Number(id),
-            saldo,
             kredit,
             debet,
             uraian,

@@ -125,7 +125,7 @@ async function main() {
     const transactionsIncome = await prisma.transaction.createMany({
         data: [
             {
-                saldo: 50000000,
+                saldo: 5000000,
                 kredit: 5000000,
                 debet: 0,
                 uraian: "Donasi dari pengurus DKM",
@@ -135,7 +135,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 55000000,
+                saldo: 10000000,
                 kredit: 10000000,
                 debet: 0,
                 uraian: "Donasi dari jamaah saat Jum'at",
@@ -145,7 +145,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 65000000,
+                saldo: 15000000,
                 kredit: 15000000,
                 debet: 0,
                 uraian: "Donasi dari acara qurban",
@@ -155,7 +155,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 80000000,
+                saldo: 8000000,
                 kredit: 8000000,
                 debet: 0,
                 uraian: "Donasi dari komunitas bisnis Islam",
@@ -165,7 +165,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 88000000,
+                saldo: 12000000,
                 kredit: 12000000,
                 debet: 0,
                 uraian: "Donasi Ramadan Kareem",
@@ -175,7 +175,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 100000000,
+                saldo: 5000000,
                 kredit: 5000000,
                 debet: 0,
                 uraian: "Donasi khusus renovasi",
@@ -193,7 +193,7 @@ async function main() {
     const transactionsExpense = await prisma.transaction.createMany({
         data: [
             {
-                saldo: 97000000,
+                saldo: -3000000,
                 kredit: 0,
                 debet: 3000000,
                 uraian: "Pembayaran gaji imam dan muadzin",
@@ -203,7 +203,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 94500000,
+                saldo: -2500000,
                 kredit: 0,
                 debet: 2500000,
                 uraian: "Pembelian perlengkapan ibadah",
@@ -213,7 +213,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 91000000,
+                saldo: -3500000,
                 kredit: 0,
                 debet: 3500000,
                 uraian: "Biaya listrik dan air PDAM",
@@ -223,7 +223,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 87000000,
+                saldo: -4000000,
                 kredit: 0,
                 debet: 4000000,
                 uraian: "Perbaikan atap masjid",
@@ -233,7 +233,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 84500000,
+                saldo: -2500000,
                 kredit: 0,
                 debet: 2500000,
                 uraian: "Pembelian hadiah lomba qur'an",
@@ -243,7 +243,7 @@ async function main() {
                 isDeleted: false,
             },
             {
-                saldo: 81000000,
+                saldo: -3500000,
                 kredit: 0,
                 debet: 3500000,
                 uraian: "Gaji pekerja dan maintenance",
