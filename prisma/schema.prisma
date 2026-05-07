@@ -27,6 +27,7 @@ model User {
 
   contents     Content[]
   transactions Transaction[]
+  predictions  Prediction[]
 }
 
 model UserToken {
@@ -88,8 +89,8 @@ model Prediction {
   prediksiPemasukan   Float
   prediksiPengeluaran Float
   tanggalTarget       DateTime
-  rmse                Float
-  wmape               Float
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  userId              Int
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
