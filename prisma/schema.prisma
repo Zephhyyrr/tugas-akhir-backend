@@ -11,20 +11,38 @@ enum RoleUser {
   admin
 }
 
+enum TipeTransaksi {
+  uang_masuk
+  uang_keluar
+  saldo_awal
+}
+
+enum TipeKurban {
+  individu_sapi
+  individu_kambing
+  kelompok
+}
+
+enum JenisKonten {
+  berita
+  pengurus
+  imsakiyah
+}
+
 model User {
-  id          Int         @id @default(autoincrement())
-  isDeleted   Boolean     @default(false)
-  isActive    Boolean     @default(true)
+  id          Int       @id @default(autoincrement())
+  isDeleted   Boolean   @default(false)
+  isActive    Boolean   @default(true)
   nama        String
-  email       String      @unique
+  email       String    @unique
   role        RoleUser
   password    String
-  userToken   UserToken[]
   fotoProfile String?
-  isVerified  Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  isVerified  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
+  userToken    UserToken[]
   contents     Content[]
   transactions Transaction[]
   predictions  Prediction[]
@@ -42,46 +60,93 @@ model UserToken {
 }
 
 model Content {
-  id        Int      @id @default(autoincrement())
-  isDeleted Boolean  @default(false)
+  id        Int         @id @default(autoincrement())
   judul     String
-  isi       String   @db.Text
-  gambarUrl String?
-  videoUrl  String?
-  status    String   @default("published")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  gambarUrl String
+  jenis     JenisKonten
+  isTampil  Boolean     @default(true)
+  isDeleted Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model KeteranganTransaksi {
+model KelompokKurban {
   id        Int      @id @default(autoincrement())
   nama      String
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  transactions Transaction[]
+  peserta PesertaKurban[]
 }
 
-model Transaction {
+model PesertaKurban {
+  id        Int        @id @default(autoincrement())
+  nama      String
+  nominal   Float
+  tipe      TipeKurban
+  isDeleted Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  mediaPembayaranId Int
+  mediaPembayaran   MediaPembayaran @relation(fields: [mediaPembayaranId], references: [id])
+
+  kelompokKurbanId Int?
+  kelompokKurban   KelompokKurban? @relation(fields: [kelompokKurbanId], references: [id])
+}
+
+model JenisKas {
   id        Int      @id @default(autoincrement())
-  saldo     Float
-  kredit    Float
-  debet     Float
-  uraian    String
-  tanggal   DateTime
+  nama      String   @unique
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  transactions Transaction[]
+  predictions  Prediction[]
+}
+
+model MediaPembayaran {
+  id        Int      @id @default(autoincrement())
+  nama      String   @unique
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions  Transaction[]
+  pesertaKurban PesertaKurban[]
+}
+
+model FavoriteTransaksi {
+  id        Int      @id @default(autoincrement())
+  uraian    String   @unique
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id        Int           @id @default(autoincrement())
+  uraian    String
+  tipe      TipeTransaksi
+  nominal   Float
+  tanggal   DateTime
+  isDeleted Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  keteranganTransaksiId Int
-  keteranganTransaksi   KeteranganTransaksi @relation(fields: [keteranganTransaksiId], references: [id], onDelete: Cascade)
+  jenisKasId Int
+  jenisKas   JenisKas @relation(fields: [jenisKasId], references: [id])
+
+  mediaPembayaranId Int
+  mediaPembayaran   MediaPembayaran @relation(fields: [mediaPembayaranId], references: [id])
 }
 
 model Prediction {
@@ -91,6 +156,10 @@ model Prediction {
   tanggalTarget       DateTime
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-  userId              Int
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jenisKasId Int
+  jenisKas   JenisKas @relation(fields: [jenisKasId], references: [id])
 }
