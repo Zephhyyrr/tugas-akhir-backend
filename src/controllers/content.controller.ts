@@ -7,10 +7,10 @@ import {
     updateContentService,
     deleteContentService,
     deletePermanentContentService,
-    publishedContentService,
     getDraftContentService
 } from "../services/content.service";
-import { AppError, handlerAnyError } from "../errors/api_errors";
+import { AppError } from "../errors/api_errors";
+import { handlerAnyError } from "../errors/api_errors";
 
 export async function getAllContentController(req: Request, res: Response<ResponseApiType>) {
     try {
@@ -45,41 +45,27 @@ export async function getContentByIdController(req: Request, res: Response<Respo
 
 export async function createContentController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { judul, isi, status } = req.body;
+        const { judul, jenis, isTampil } = req.body;
+        const gambarUrl = (req as any).file?.filename;
         const userId = Number((req as any).user?.id);
 
         if (!Number.isInteger(userId)) {
             throw new AppError("User tidak valid.");
         }
 
-        const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-        
-        let gambarUrls: string[] = [];
-        let videoUrls: string[] = [];
-
-        const gambarFiles = files?.gambarUrl || files?.gambar || files?.image;
-        const videoFiles = files?.videoUrl || files?.video || files?.videos;
-
-        if (gambarFiles) {
-            gambarUrls = gambarFiles.map(file => `/uploads/${file.filename}`);
-        }
-
-        if (videoFiles) {
-            videoUrls = videoFiles.map(file => `/uploads/${file.filename}`);
-        }
+        const isTampilBool = isTampil === 'true' || isTampil === true;
 
         const newContent = await createContentService(
             judul,
-            isi,
-            status,
-            userId,
-            gambarUrls.length > 0 ? gambarUrls.join(',') : undefined,
-            videoUrls.length > 0 ? videoUrls.join(',') : undefined
+            gambarUrl || "",
+            jenis,
+            isTampilBool,
+            userId
         );
 
         return res.status(201).json({
             success: true,
-            message: `Berhasil menambahkan content: ${newContent.judul}.`,
+            message: `Berhasil menambahkan content.`,
             data: newContent
         });
     } catch (error) {
@@ -90,36 +76,24 @@ export async function createContentController(req: Request, res: Response<Respon
 export async function updateContentController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { judul, isi, status } = req.body;
+        const { judul, jenis, isTampil } = req.body;
+        const gambarUrl = (req as any).file?.filename;
 
-        const files = req.files as { [key: string]: Express.Multer.File[] } | undefined;
-        
-        let gambarUrl: string | undefined;
-        let videoUrl: string | undefined;
+        const isTampilBool = isTampil === 'true' || isTampil === true;
 
-        const gambarFiles = files?.gambarUrl || files?.gambar || files?.image;
-        const videoFiles = files?.videoUrl || files?.video || files?.videos;
-
-        if (gambarFiles && gambarFiles.length > 0) {
-            gambarUrl = gambarFiles.map(file => `/uploads/${file.filename}`).join(',');
-        }
-
-        if (videoFiles && videoFiles.length > 0) {
-            videoUrl = videoFiles.map(file => `/uploads/${file.filename}`).join(',');
-        }
+        const content = await getContentByIdService(Number(id));
 
         const updatedContent = await updateContentService(
             Number(id),
-            judul,
-            isi,
-            status,
-            gambarUrl,
-            videoUrl
+            judul || content.judul,
+            gambarUrl || content.gambarUrl,
+            jenis || content.jenis,
+            isTampil !== undefined ? isTampilBool : content.isTampil
         );
 
         return res.status(200).json({
             success: true,
-            message: `Berhasil mengupdate content: ${updatedContent.judul}.`,
+            message: `Berhasil mengupdate content.`,
             data: updatedContent
         });
     } catch (error) {
@@ -132,7 +106,7 @@ export async function deleteContentController(req: Request, res: Response<Respon
         const { id } = req.params;
 
         const deletedContent = await deleteContentService(Number(id));
-        const message = deletedContent.isDeleted ? `Berhasil menghapus content: ${deletedContent.judul}.` : `Berhasil memulihkan content: ${deletedContent.judul}.`;
+        const message = deletedContent.isDeleted ? `Berhasil menghapus content dengan judul: ${deletedContent.judul}.` : `Berhasil memulihkan content dengan judul: ${deletedContent.judul}.`;
         return res.status(200).json({
             success: true,
             message
@@ -167,23 +141,6 @@ export async function getDraftContentController(req: Request, res: Response<Resp
             message: "Berhasil mendapatkan daftar content draft.",
             data: draftContents.data,
             meta: draftContents.meta
-        });
-    }
-        catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
-
-export async function publishedContentController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        const updatedContent = await publishedContentService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: `Berhasil mengubah status content: ${updatedContent.judul} menjadi ${updatedContent.status}.`,
-            data: updatedContent
         });
     } catch (error) {
         return handlerAnyError(error, res);

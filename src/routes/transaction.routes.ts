@@ -6,7 +6,8 @@ import {
     updateTransactionController,
     deleteTransactionController,
     deletePermanentTransactionController,
-    getDraftTransactionController
+    getDraftTransactionController,
+    getDashboardSummaryController
 } from "../controllers/transaction.controller";
 import {
     createTransactionValidator,
@@ -19,6 +20,7 @@ import upload from "../middlewares/upload";
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllTransactionController);
+router.get("/dashboard", jwtCheckToken, isRole("admin", "superadmin"), getDashboardSummaryController);
 router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftTransactionController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getTransactionByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createTransactionValidator, createTransactionController);

@@ -14,7 +14,6 @@ enum RoleUser {
 enum TipeTransaksi {
   uang_masuk
   uang_keluar
-  saldo_awal
 }
 
 enum TipeKurban {
@@ -134,6 +133,8 @@ model Transaction {
   uraian    String
   tipe      TipeTransaksi
   nominal   Float
+  debit     Float         @default(0)
+  kredit    Float         @default(0)
   tanggal   DateTime
   isDeleted Boolean       @default(false)
   createdAt DateTime      @default(now())

@@ -1,6 +1,7 @@
 import prisma from "../config/prisma";
 import { AppError } from "../errors/api_errors";
 import { getPagination, getPagingData } from "../utils/pagination";
+import { JenisKonten } from "@prisma/client";
 
 export async function getAllContentService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
@@ -44,11 +45,10 @@ export async function getContentByIdService(id: number) {
 
 export async function createContentService(
     judul: string,
-    isi: string,
-    status: string | undefined,
-    userId: number,
-    gambarUrl?: string,
-    videoUrl?: string
+    gambarUrl: string,
+    jenis: JenisKonten,
+    isTampil: boolean,
+    userId: number
 ) {
     const userExists = await prisma.user.findUnique({ where: { id: userId } });
     if (!userExists) {
@@ -58,11 +58,10 @@ export async function createContentService(
     const content = await prisma.content.create({
         data: {
             judul,
-            isi,
-            status: status || "published",
-            userId,
             gambarUrl,
-            videoUrl
+            jenis,
+            isTampil,
+            userId
         },
         include: { user: true },
     });
@@ -77,20 +76,17 @@ export async function createContentService(
 export async function updateContentService(
     id: number,
     judul: string,
-    isi: string,
-    status: string,
-    gambarUrl?: string,
-    videoUrl?: string
+    gambarUrl: string,
+    jenis: JenisKonten,
+    isTampil: boolean
 ) {
-
     const updated = await prisma.content.update({
         where: { id },
         data: {
             judul,
-            isi,
-            status,
             gambarUrl,
-            videoUrl,
+            jenis,
+            isTampil
         },
         include: { user: true },
     });
@@ -162,30 +158,5 @@ export async function getDraftContentService(page: number, limit: number) {
             updatedAt: c.updatedAt
         })),
         meta: meta
-    };
-}
-
-export async function publishedContentService(id: number) {
-    const content = await prisma.content.findUnique({
-        where: { id },
-        include: { user: true },
-    });
-
-    if (!content) {
-        throw new AppError(`Content dengan id: ${id}, tidak tersedia.`);
-    }
-
-    const newStatus = content.status === "published" ? "draft" : "published";
-
-    const updated = await prisma.content.update({
-        where: { id },
-        data: { status: newStatus },
-        include: { user: true },
-    });
-
-    return {
-        ...updated,
-        createdAt: updated.createdAt,
-        updatedAt: updated.updatedAt
     };
 }

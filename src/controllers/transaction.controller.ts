@@ -7,7 +7,8 @@ import {
     updateTransactionService,
     deleteTransactionService,
     deletePermanentTransactionService,
-    getDraftTransactionService
+    getDraftTransactionService,
+    getDashboardSummaryService
 } from "../services/transaction.service";
 import { AppError } from "../errors/api_errors";
 import { handlerAnyError } from "../errors/api_errors";
@@ -16,12 +17,24 @@ export async function getAllTransactionController(req: Request, res: Response<Re
     try {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
+        
+        const filters = {
+            search: req.query.search,
+            type: req.query.type,
+            startDate: req.query.startDate,
+            endDate: req.query.endDate,
+            month: req.query.month,
+            year: req.query.year,
+            jenisKasId: req.query.jenisKasId,
+        };
 
-        const transactions = await getAllTransactionService(page, limit);
+        const transactions = await getAllTransactionService(page, limit, filters);
         return res.status(200).json({
             success: true,
             message: "Mendapatkan data transaction.",
-            data: transactions
+            data: transactions.data,
+            meta: transactions.meta,
+            summary: transactions.summary
         });
     } catch (error) {
         return handlerAnyError(error, res);
@@ -45,7 +58,7 @@ export async function getTransactionByIdController(req: Request, res: Response<R
 
 export async function createTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
+        const { uraian, tipe, nominal, debit, kredit, tanggal, jenisKasId, mediaPembayaranId } = req.body;
         const userId = Number((req as any).user?.id);
 
         if (!Number.isInteger(userId)) {
@@ -53,12 +66,15 @@ export async function createTransactionController(req: Request, res: Response<Re
         }
 
         const newTransaction = await createTransactionService(
-            kredit,
-            debet,
             uraian,
+            tipe,
+            Number(nominal),
+            Number(debit),
+            Number(kredit),
             new Date(tanggal),
             userId,
-            keteranganTransaksiId
+            Number(jenisKasId),
+            Number(mediaPembayaranId)
         );
 
         return res.status(201).json({
@@ -74,15 +90,17 @@ export async function createTransactionController(req: Request, res: Response<Re
 export async function updateTransactionController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { kredit, debet, uraian, tanggal, keteranganTransaksiId } = req.body;
-
+        const { uraian, tipe, nominal, debit, kredit, tanggal, jenisKasId, mediaPembayaranId } = req.body;
         const updatedTransaction = await updateTransactionService(
             Number(id),
-            kredit,
-            debet,
             uraian,
+            tipe,
+            Number(nominal),
+            Number(debit),
+            Number(kredit),
             new Date(tanggal),
-            keteranganTransaksiId ? Number(keteranganTransaksiId) : undefined
+            Number(jenisKasId),
+            Number(mediaPembayaranId)
         );
 
         return res.status(200).json({
@@ -135,6 +153,21 @@ export async function getDraftTransactionController(req: Request, res: Response<
             message: "Berhasil mendapatkan daftar transaction draft.",
             data: draftTransactions.data,
             meta: draftTransactions.meta
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getDashboardSummaryController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const year = Number(req.query.year) || new Date().getFullYear();
+        const summary = await getDashboardSummaryService(year);
+        
+        return res.status(200).json({
+            success: true,
+            message: `Berhasil mendapatkan ringkasan dashboard tahun ${year}.`,
+            data: summary
         });
     } catch (error) {
         return handlerAnyError(error, res);

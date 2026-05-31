@@ -12,12 +12,12 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
     next();
 };
 
-export const createKeteranganTransaksiValidator = [
-    body("nama").notEmpty().withMessage("Nama wajib diisi."),
+export const createJenisKasValidator = [
+    body("nama").notEmpty(),
     validateRequest
 ];
 
-export const updateKeteranganTransaksiValidator = [
+export const updateJenisKasValidator = [
     param("id").isInt().withMessage("ID harus berupa angka."),
     body("nama").notEmpty().withMessage("Nama wajib diisi."),
     validateRequest

@@ -12,18 +12,14 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
     next();
 };
 
-export const createContentValidator = [
-    body("judul").notEmpty().withMessage("Judul wajib diisi."),
-    body("jenis").isIn(["berita", "pengurus", "imsakiyah"]).withMessage("Jenis konten tidak valid."),
-    body("isTampil").optional().isBoolean().withMessage("Tampil harus berupa boolean."),
+export const createMediaPembayaranValidator = [
+    body("nama").notEmpty().withMessage("Nama wajib diisi."),
     validateRequest
 ];
 
-export const updateContentValidator = [
+export const updateMediaPembayaranValidator = [
     param("id").isInt().withMessage("ID harus berupa angka."),
-    body("judul").optional().notEmpty().withMessage("Judul tidak boleh kosong bila diupdate."),
-    body("jenis").optional().isIn(["berita", "pengurus", "imsakiyah"]).withMessage("Jenis konten tidak valid."),
-    body("isTampil").optional().isBoolean().withMessage("Tampil harus berupa boolean."),
+    body("nama").notEmpty().withMessage("Nama wajib diisi."),
     validateRequest
 ];
 

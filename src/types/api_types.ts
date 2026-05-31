@@ -3,5 +3,6 @@ export interface ResponseApiType {
     message: string,
     data?: Object,
     meta?: Object,
-    errors?: Object
+    errors?: Object,
+    summary?: Object
 }
