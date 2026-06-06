@@ -161,12 +161,15 @@ export async function getDraftTransactionController(req: Request, res: Response<
 
 export async function getDashboardSummaryController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const year = Number(req.query.year) || new Date().getFullYear();
+        const yearQuery = req.query.year;
+        const year: number | 'all' = yearQuery === 'all' ? 'all' : (Number(yearQuery) || new Date().getFullYear());
         const summary = await getDashboardSummaryService(year);
-        
+
         return res.status(200).json({
             success: true,
-            message: `Berhasil mendapatkan ringkasan dashboard tahun ${year}.`,
+            message: year === 'all'
+                ? 'Berhasil mendapatkan ringkasan dashboard semua tahun.'
+                : `Berhasil mendapatkan ringkasan dashboard tahun ${year}.`,
             data: summary
         });
     } catch (error) {
