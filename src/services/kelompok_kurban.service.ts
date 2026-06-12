@@ -39,9 +39,9 @@ export async function getKelompokKurbanByIdService(id: number) {
     };
 }
 
-export async function createKelompokKurbanService(nama: string) {
+export async function createKelompokKurbanService(nama: string, tahun: string) {
     const kelompokKurban = await prisma.kelompokKurban.create({
-        data: { nama },
+        data: { nama, tahun },
         include: { peserta: true },
     });
 
@@ -52,12 +52,12 @@ export async function createKelompokKurbanService(nama: string) {
     };
 }
 
-export async function updateKelompokKurbanService(id: number, nama: string) {
+export async function updateKelompokKurbanService(id: number, nama: string, tahun: string) {
     await getKelompokKurbanByIdService(id);
 
     const updated = await prisma.kelompokKurban.update({
         where: { id },
-        data: { nama },
+        data: { nama, tahun },
         include: { peserta: true },
     });
 

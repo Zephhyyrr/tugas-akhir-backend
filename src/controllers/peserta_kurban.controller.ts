@@ -10,6 +10,7 @@ import {
     getDraftPesertaKurbanService
 } from "../services/peserta_kurban.service";
 import { handlerAnyError } from "../errors/api_errors";
+import prisma from "../config/prisma";
 
 export async function getAllPesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {
@@ -44,9 +45,9 @@ export async function getPesertaKurbanByIdController(req: Request, res: Response
 
 export async function createPesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId } = req.body;
+        const { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId, tahun } = req.body;
 
-        const newPesertaKurban = await createPesertaKurbanService(nama, Number(nominal), tipe, Number(mediaPembayaranId), kelompokKurbanId ? Number(kelompokKurbanId) : null);
+        const newPesertaKurban = await createPesertaKurbanService(nama, Number(nominal), tipe, Number(mediaPembayaranId), kelompokKurbanId ? Number(kelompokKurbanId) : null, tahun);
 
         return res.status(201).json({
             success: true,
@@ -61,9 +62,9 @@ export async function createPesertaKurbanController(req: Request, res: Response<
 export async function updatePesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId } = req.body;
+        const { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId, tahun } = req.body;
 
-        const updatedPesertaKurban = await updatePesertaKurbanService(Number(id), nama, Number(nominal), tipe, Number(mediaPembayaranId), kelompokKurbanId ? Number(kelompokKurbanId) : null);
+        const updatedPesertaKurban = await updatePesertaKurbanService(Number(id), nama, Number(nominal), tipe, Number(mediaPembayaranId), kelompokKurbanId ? Number(kelompokKurbanId) : null, tahun);
 
         return res.status(200).json({
             success: true,
@@ -114,6 +115,58 @@ export async function getDraftPesertaKurbanController(req: Request, res: Respons
             success: true,
             message: "Mendapatkan data peserta kurban yang dihapus.",
             data: draftPesertaKurban
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getAvailableKurbanYearsController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const kelompokYears = await prisma.kelompokKurban.findMany({
+            select: { tahun: true },
+            distinct: ['tahun'],
+            where: { isDeleted: false, tahun: { not: '' } }
+        });
+        const individuYears = await prisma.pesertaKurban.findMany({
+            select: { tahun: true },
+            distinct: ['tahun'],
+            where: { isDeleted: false, tahun: { not: '' } }
+        });
+        
+        const yearsSet = new Set([...kelompokYears.map(y => y.tahun), ...individuYears.map(y => y.tahun)]);
+        const years = Array.from(yearsSet).sort((a, b) => Number(b) - Number(a));
+
+        return res.status(200).json({
+            success: true,
+            message: "Mendapatkan daftar tahun kurban.",
+            data: years
+        });
+    } catch (error) {
+        return handlerAnyError(error, res);
+    }
+}
+
+export async function getPublicKurbanByTahunController(req: Request, res: Response<ResponseApiType>) {
+    try {
+        const tahun = req.query.tahun as string || "2024";
+
+        const kelompokKurban = await prisma.kelompokKurban.findMany({
+            where: { tahun, isDeleted: false },
+            include: { peserta: { where: { isDeleted: false } } }
+        });
+
+        const individuKurban = await prisma.pesertaKurban.findMany({
+            where: { tahun, kelompokKurbanId: null, isDeleted: false }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: `Berhasil mendapatkan data kurban tahun ${tahun}`,
+            data: {
+                kelompok: kelompokKurban,
+                individu: individuKurban
+            }
         });
     } catch (error) {
         return handlerAnyError(error, res);

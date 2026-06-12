@@ -39,9 +39,9 @@ export async function getPesertaKurbanByIdService(id: number) {
     };
 }
 
-export async function createPesertaKurbanService(nama: string, nominal: number, tipe: any, mediaPembayaranId: number, kelompokKurbanId: number | null) {
+export async function createPesertaKurbanService(nama: string, nominal: number, tipe: any, mediaPembayaranId: number, kelompokKurbanId: number | null, tahun: string) {
     const pesertaKurban = await prisma.pesertaKurban.create({
-        data: { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId },
+        data: { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId, tahun },
         include: { mediaPembayaran: true, kelompokKurban: true },
     });
 
@@ -52,12 +52,12 @@ export async function createPesertaKurbanService(nama: string, nominal: number, 
     };
 }
 
-export async function updatePesertaKurbanService(id: number, nama: string, nominal: number, tipe: any, mediaPembayaranId: number, kelompokKurbanId: number | null) {
+export async function updatePesertaKurbanService(id: number, nama: string, nominal: number, tipe: any, mediaPembayaranId: number, kelompokKurbanId: number | null, tahun: string) {
     await getPesertaKurbanByIdService(id);
 
     const updated = await prisma.pesertaKurban.update({
         where: { id },
-        data: { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId },
+        data: { nama, nominal, tipe, mediaPembayaranId, kelompokKurbanId, tahun },
         include: { mediaPembayaran: true, kelompokKurban: true },
     });
 
@@ -130,4 +130,3 @@ export async function getDraftPesertaKurbanService(page: number, limit: number) 
         meta: meta
     };
 }
-

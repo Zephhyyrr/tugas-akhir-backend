@@ -3,17 +3,23 @@ import { AppError } from "../errors/api_errors";
 import { getPagination, getPagingData } from "../utils/pagination";
 import { JenisKonten } from "@prisma/client";
 
-export async function getAllContentService(page: number, limit: number) {
+export async function getAllContentService(page: number, limit: number, jenis?: string) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
+    const whereClause: any = { isDeleted: false };
+    if (jenis) {
+        whereClause.jenis = jenis as JenisKonten;
+        whereClause.isTampil = true;
+    }
     const contents = await prisma.content.findMany({
         skip,
         take,
-        where: { isDeleted: false },
+        where: whereClause,
         include: { user: true },
+        orderBy: { createdAt: 'desc' },
     });
 
     const totalItems = await prisma.content.count({
-        where: { isDeleted: false },
+        where: whereClause,
     });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
@@ -45,6 +51,7 @@ export async function getContentByIdService(id: number) {
 
 export async function createContentService(
     judul: string,
+    isi: string,
     gambarUrl: string,
     jenis: JenisKonten,
     isTampil: boolean,
@@ -55,9 +62,19 @@ export async function createContentService(
         throw new AppError(`User dengan id: ${userId}, tidak tersedia.`);
     }
 
+    if (['pengurus', 'imsakiyah', 'sejarah'].includes(jenis)) {
+        const existingContent = await prisma.content.findFirst({
+            where: { jenis, isDeleted: false }
+        });
+        if (existingContent) {
+            throw new AppError(`Konten jenis ${jenis} hanya boleh ada 1. Silakan edit konten yang sudah ada.`);
+        }
+    }
+
     const content = await prisma.content.create({
         data: {
             judul,
+            isi,
             gambarUrl,
             jenis,
             isTampil,
@@ -76,6 +93,7 @@ export async function createContentService(
 export async function updateContentService(
     id: number,
     judul: string,
+    isi: string,
     gambarUrl: string,
     jenis: JenisKonten,
     isTampil: boolean
@@ -84,6 +102,7 @@ export async function updateContentService(
         where: { id },
         data: {
             judul,
+            isi,
             gambarUrl,
             jenis,
             isTampil

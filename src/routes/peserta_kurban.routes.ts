@@ -6,7 +6,9 @@ import {
     updatePesertaKurbanController,
     deletePesertaKurbanController,
     deletePermanentPesertaKurbanController,
-    getDraftPesertaKurbanController
+    getDraftPesertaKurbanController,
+    getAvailableKurbanYearsController,
+    getPublicKurbanByTahunController
 } from "../controllers/peserta_kurban.controller";
 import {
     createPesertaKurbanValidator,
@@ -21,6 +23,8 @@ const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllPesertaKurbanController);
 router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftPesertaKurbanController);
+router.get("/public/years", getAvailableKurbanYearsController);
+router.get("/public/kurban", getPublicKurbanByTahunController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getPesertaKurbanByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createPesertaKurbanValidator, createPesertaKurbanController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updatePesertaKurbanValidator, updatePesertaKurbanController);

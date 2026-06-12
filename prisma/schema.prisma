@@ -26,6 +26,7 @@ enum JenisKonten {
   berita
   pengurus
   imsakiyah
+  sejarah
 }
 
 model User {
@@ -61,6 +62,7 @@ model UserToken {
 model Content {
   id        Int         @id @default(autoincrement())
   judul     String
+  isi       String      @db.Text
   gambarUrl String
   jenis     JenisKonten
   isTampil  Boolean     @default(true)
@@ -75,6 +77,7 @@ model Content {
 model KelompokKurban {
   id        Int      @id @default(autoincrement())
   nama      String
+  tahun     String
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -86,6 +89,7 @@ model PesertaKurban {
   id        Int        @id @default(autoincrement())
   nama      String
   nominal   Float
+  tahun     String
   tipe      TipeKurban
   isDeleted Boolean    @default(false)
   createdAt DateTime   @default(now())

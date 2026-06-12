@@ -14,12 +14,14 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
 
 export const createPesertaKurbanValidator = [
     body("nama").notEmpty(),
+    body("tahun").optional().isString(),
     validateRequest
 ];
 
 export const updatePesertaKurbanValidator = [
     param("id").isInt().withMessage("ID harus berupa angka."),
     body("nama").notEmpty().withMessage("Nama wajib diisi."),
+    body("tahun").optional().isString(),
     validateRequest
 ];
 

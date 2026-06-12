@@ -19,6 +19,9 @@ import { isRole } from "../middlewares/is_role";
 import upload from "../middlewares/upload";
 const router = Router();
 
+router.get("/public/list", getAllTransactionController);
+router.get("/public/dashboard", getDashboardSummaryController);
+
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllTransactionController);
 router.get("/dashboard", jwtCheckToken, isRole("admin", "superadmin"), getDashboardSummaryController);
 router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftTransactionController);

@@ -16,8 +16,9 @@ export async function getAllContentController(req: Request, res: Response<Respon
     try {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
+        const jenis = req.query.jenis as string | undefined;
 
-        const contents = await getAllContentService(page, limit);
+        const contents = await getAllContentService(page, limit, jenis);
         return res.status(200).json({
             success: true,
             message: "Mendapatkan data content.",
@@ -45,7 +46,7 @@ export async function getContentByIdController(req: Request, res: Response<Respo
 
 export async function createContentController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { judul, jenis, isTampil } = req.body;
+        const { judul, isi, jenis, isTampil } = req.body;
         const gambarUrl = (req as any).file?.filename;
         const userId = Number((req as any).user?.id);
 
@@ -57,6 +58,7 @@ export async function createContentController(req: Request, res: Response<Respon
 
         const newContent = await createContentService(
             judul,
+            isi || "",
             gambarUrl || "",
             jenis,
             isTampilBool,
@@ -76,7 +78,7 @@ export async function createContentController(req: Request, res: Response<Respon
 export async function updateContentController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { judul, jenis, isTampil } = req.body;
+        const { judul, isi, jenis, isTampil } = req.body;
         const gambarUrl = (req as any).file?.filename;
 
         const isTampilBool = isTampil === 'true' || isTampil === true;
@@ -86,6 +88,7 @@ export async function updateContentController(req: Request, res: Response<Respon
         const updatedContent = await updateContentService(
             Number(id),
             judul || content.judul,
+            isi !== undefined ? isi : content.isi,
             gambarUrl || content.gambarUrl,
             jenis || content.jenis,
             isTampil !== undefined ? isTampilBool : content.isTampil

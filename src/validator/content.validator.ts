@@ -14,7 +14,7 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
 
 export const createContentValidator = [
     body("judul").notEmpty().withMessage("Judul wajib diisi."),
-    body("jenis").isIn(["berita", "pengurus", "imsakiyah"]).withMessage("Jenis konten tidak valid."),
+    body("jenis").isIn(["berita", "pengurus", "imsakiyah", "sejarah"]).withMessage("Jenis konten tidak valid."),
     body("isTampil").optional().isBoolean().withMessage("Tampil harus berupa boolean."),
     validateRequest
 ];
@@ -22,7 +22,7 @@ export const createContentValidator = [
 export const updateContentValidator = [
     param("id").isInt().withMessage("ID harus berupa angka."),
     body("judul").optional().notEmpty().withMessage("Judul tidak boleh kosong bila diupdate."),
-    body("jenis").optional().isIn(["berita", "pengurus", "imsakiyah"]).withMessage("Jenis konten tidak valid."),
+    body("jenis").optional().isIn(["berita", "pengurus", "imsakiyah", "sejarah"]).withMessage("Jenis konten tidak valid."),
     body("isTampil").optional().isBoolean().withMessage("Tampil harus berupa boolean."),
     validateRequest
 ];

@@ -44,9 +44,9 @@ export async function getKelompokKurbanByIdController(req: Request, res: Respons
 
 export async function createKelompokKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {
-        const { nama } = req.body;
+        const { nama, tahun } = req.body;
 
-        const newKelompokKurban = await createKelompokKurbanService(nama);
+        const newKelompokKurban = await createKelompokKurbanService(nama, tahun);
 
         return res.status(201).json({
             success: true,
@@ -61,9 +61,9 @@ export async function createKelompokKurbanController(req: Request, res: Response
 export async function updateKelompokKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { nama } = req.body;
+        const { nama, tahun } = req.body;
 
-        const updatedKelompokKurban = await updateKelompokKurbanService(Number(id), nama);
+        const updatedKelompokKurban = await updateKelompokKurbanService(Number(id), nama, tahun);
 
         return res.status(200).json({
             success: true,
