@@ -93,4 +93,3 @@ npm run prisma:seed # atau sesuaikan perintah seed jika tersedia
 ```bash
 npm run dev
 ```
-Server backend akan berjalan, secara default pada port `3000` atau sesuai konfigurasi di `.env`.
