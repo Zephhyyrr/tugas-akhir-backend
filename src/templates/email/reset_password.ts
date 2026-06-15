@@ -5,7 +5,7 @@ export function resetPasswordTemplate(nama: string, resetUrl: string): string {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Reset Password - Aplikasi Donasi Masjid</title>
+            <title>Reset Password - Surau Zam-Zam</title>
             <style>
                 * {
                     margin: 0;
@@ -134,6 +134,7 @@ export function resetPasswordTemplate(nama: string, resetUrl: string): string {
         <body>
             <div class="container">
                 <div class="header">
+                    <img src="cid:zamfis_logo" alt="Logo" style="width: 120px; height: auto; margin-bottom: 15px;" />
                     <h1>🔐 Reset Kata Sandi</h1>
                     <p>Perbarui kata sandi akun Donatur Anda</p>
                 </div>
@@ -167,7 +168,7 @@ export function resetPasswordTemplate(nama: string, resetUrl: string): string {
                 </div>
 
                 <div class="footer">
-                    <p>&copy; 2026 Aplikasi Donasi Masjid. Semoga menjadi amal jariyah.</p>
+                    <p>&copy; 2026 Surau Zam-Zam. Semoga menjadi amal jariyah.</p>
                 </div>
             </div>
         </body>

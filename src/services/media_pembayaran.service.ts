@@ -5,12 +5,15 @@ import { getPagination, getPagingData } from "../utils/pagination";
 export async function getAllMediaPembayaranService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const mediaPembayaran = await prisma.mediaPembayaran.findMany({
+        where: { isDeleted: false },
         skip,
         take,
         include: { transactions: true, pesertaKurban: true },
     });
 
-    const totalItems = await prisma.mediaPembayaran.count();
+    const totalItems = await prisma.mediaPembayaran.count({
+        where: { isDeleted: false }
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: mediaPembayaran.map(kt => ({

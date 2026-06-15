@@ -5,12 +5,15 @@ import { getPagination, getPagingData } from "../utils/pagination";
 export async function getAllPesertaKurbanService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const pesertaKurban = await prisma.pesertaKurban.findMany({
+        where: { isDeleted: false },
         skip,
         take,
         include: { mediaPembayaran: true, kelompokKurban: true },
     });
 
-    const totalItems = await prisma.pesertaKurban.count();
+    const totalItems = await prisma.pesertaKurban.count({
+        where: { isDeleted: false }
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: pesertaKurban.map(kt => ({

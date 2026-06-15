@@ -106,6 +106,14 @@ export async function updateUserController(req: Request, res: Response<ResponseA
 export async function toggleUserActiveController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
+
+        if (Number(id) === req.user?.id) {
+            return res.status(400).json({
+                success: false,
+                message: "Tidak bisa menonaktifkan atau mengaktifkan akun sendiri."
+            });
+        }
+
         const { user, action } = await userActiveService(Number(id));
 
         const message = action === "activate"

@@ -9,11 +9,13 @@ import kelompokKurbanRoutes from "./kelompok_kurban.routes";
 import pesertaKurbanRoutes from "./peserta_kurban.routes";
 import transactionRoutes from "./transaction.routes";
 import authRoutes from "./auth.routes";
+import predictRoutes from "./predict.routes";
 
 apiRouter.get("/health", (req, res) => {
     res.json({ message: "API sukses berjalan" })
 });
 apiRouter.use("/auth", authRoutes);
+apiRouter.use("/predict", predictRoutes);
 apiRouter.use("/users", userRoutes);
 apiRouter.use("/contents", contentRoutes);
 apiRouter.use("/jenis-kas", jenisKasRoutes);

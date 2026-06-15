@@ -5,12 +5,15 @@ import { getPagination, getPagingData } from "../utils/pagination";
 export async function getAllJenisKasService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const jenisKas = await prisma.jenisKas.findMany({
+        where: { isDeleted: false },
         skip,
         take,
         include: { transactions: true },
     });
 
-    const totalItems = await prisma.jenisKas.count();
+    const totalItems = await prisma.jenisKas.count({
+        where: { isDeleted: false }
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: jenisKas.map(kt => ({

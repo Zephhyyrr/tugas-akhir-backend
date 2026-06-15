@@ -5,12 +5,15 @@ import { getPagination, getPagingData } from "../utils/pagination";
 export async function getAllFavoriteTransaksiService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const favoriteTransaksi = await prisma.favoriteTransaksi.findMany({
+        where: { isDeleted: false },
         skip,
         take,
         
     });
 
-    const totalItems = await prisma.favoriteTransaksi.count();
+    const totalItems = await prisma.favoriteTransaksi.count({
+        where: { isDeleted: false }
+    });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
         data: favoriteTransaksi.map(kt => ({

@@ -11,6 +11,7 @@ export async function getAllContentService(page: number, limit: number, jenis?: 
         whereClause.isTampil = true;
     }
     const contents = await prisma.content.findMany({
+        where: { isDeleted: false },
         skip,
         take,
         where: whereClause,

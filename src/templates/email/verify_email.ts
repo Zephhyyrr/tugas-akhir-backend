@@ -5,7 +5,7 @@ export function verifyEmailTemplate(nama: string, verifyUrl: string): string {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Verifikasi Email - Aplikasi Donasi Masjid</title>
+            <title>Verifikasi Email - Surau Zam-Zam</title>
             <style>
                 * {
                     margin: 0;
@@ -126,8 +126,9 @@ export function verifyEmailTemplate(nama: string, verifyUrl: string): string {
         <body>
             <div class="container">
                 <div class="header">
+                    <img src="cid:zamfis_logo" alt="Logo" style="width: 120px; height: auto; margin-bottom: 15px;" />
                     <h1>🕌 Verifikasi Akun</h1>
-                    <p>Pendaftaran Donatur Masjid</p>
+                    <p>Zam - Zam Financial Intelligence System</p>
                 </div>
 
                 <div class="content">
@@ -155,7 +156,7 @@ export function verifyEmailTemplate(nama: string, verifyUrl: string): string {
 
                 <div class="footer">
                     <p>Jika Anda merasa tidak melakukan pendaftaran ini, mohon abaikan email ini.</p>
-                    <p>&copy; 2026 Aplikasi Donasi Masjid. Semoga menjadi amal jariyah.</p>
+                    <p>&copy; 2026 Surau Zam-Zam. Semoga menjadi amal jariyah.</p>
                 </div>
             </div>
         </body>

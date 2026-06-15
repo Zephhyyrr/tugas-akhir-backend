@@ -152,10 +152,17 @@ const sendResetPasswordEmail = async (email: string, nama: string, token: string
 
     const htmlContent = resetPasswordTemplate(nama, resetUrl.toString());
     const mailOptions = {
-        from: `"Aplikasi Saya" <${process.env.SMTP_USER}>`,
+        from: `"Surau Zam-Zam" <${process.env.SMTP_USER}>`,
         to: email,
-        subject: "Reset Password - Aplikasi Saya",
-        html: htmlContent
+        subject: "Reset Password - Surau Zam-Zam",
+        html: htmlContent,
+        attachments: [
+            {
+                filename: 'zamfis_logo.png',
+                path: process.cwd() + '/src/templates/assets/zamfis_logo.png',
+                cid: 'zamfis_logo'
+            }
+        ]
     };
 
     await transporter.sendMail(mailOptions);
