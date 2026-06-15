@@ -1,6 +1,6 @@
-# Tugas Akhir Sistem Informasi Surau Zam-Zam (Zam - Zam Financial Intellgince System) - Backend
+# Tugas Akhir Sistem Informasi Surau Zam-Zam (Zam-Zam Financial Intelligence System) - Backend
 
-Repositori ini berisi source code Backend untuk **Sistem Informasi Surau Zam-Zam (Zam - Zam Financial Intellgince System)**, yang dibangun sebagai bagian dari Tugas Akhir. Sistem ini dirancang menggunakan arsitektur **MVC / Layered Architecture** untuk agar struktur kode mudah dikelola, dan modular.
+Repositori ini berisi source code Backend untuk **Sistem Informasi Surau Zam-Zam (Zam-Zam Financial Intelligence System)**, yang dibangun sebagai bagian dari Tugas Akhir. Sistem ini dirancang menggunakan arsitektur **MVC / Layered Architecture** untuk agar struktur kode mudah dikelola, dan modular.
 
 ## 🚀 Teknologi yang Digunakan
 
