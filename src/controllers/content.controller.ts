@@ -47,7 +47,9 @@ export async function getContentByIdController(req: Request, res: Response<Respo
 export async function createContentController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { judul, isi, jenis, isTampil } = req.body;
-        const gambarUrl = (req as any).file?.filename;
+        const reqFiles = (req as any).files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+        const gambarUrl = reqFiles?.['gambarUrl']?.map((file: any) => file.filename) || [];
+        const videoUrl = reqFiles?.['videoUrl']?.[0]?.filename || undefined;
         const userId = Number((req as any).user?.id);
 
         if (!Number.isInteger(userId)) {
@@ -59,7 +61,8 @@ export async function createContentController(req: Request, res: Response<Respon
         const newContent = await createContentService(
             judul,
             isi || "",
-            gambarUrl || "",
+            gambarUrl,
+            videoUrl,
             jenis,
             isTampilBool,
             userId
@@ -79,7 +82,9 @@ export async function updateContentController(req: Request, res: Response<Respon
     try {
         const { id } = req.params;
         const { judul, isi, jenis, isTampil } = req.body;
-        const gambarUrl = (req as any).file?.filename;
+        const reqFiles = (req as any).files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+        const newGambarUrl = reqFiles?.['gambarUrl']?.map((file: any) => file.filename);
+        const newVideoUrl = reqFiles?.['videoUrl']?.[0]?.filename;
 
         const isTampilBool = isTampil === 'true' || isTampil === true;
 
@@ -89,7 +94,8 @@ export async function updateContentController(req: Request, res: Response<Respon
             Number(id),
             judul || content.judul,
             isi !== undefined ? isi : content.isi,
-            gambarUrl || content.gambarUrl,
+            newGambarUrl && newGambarUrl.length > 0 ? newGambarUrl : content.gambarUrl,
+            newVideoUrl !== undefined ? newVideoUrl : content.videoUrl,
             jenis || content.jenis,
             isTampil !== undefined ? isTampilBool : content.isTampil
         );

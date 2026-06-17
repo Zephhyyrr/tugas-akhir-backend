@@ -244,7 +244,8 @@ export async function deleteUserService(id: number) {
         where: { id },
         data: {
             isDeleted: newDeletedStatus,
-            isActive: !newDeletedStatus
+            isActive: !newDeletedStatus,
+            isVerified: false
         },
         select: userResponseSelect
     });

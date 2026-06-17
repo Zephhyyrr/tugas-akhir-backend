@@ -63,7 +63,8 @@ model Content {
   id        Int         @id @default(autoincrement())
   judul     String
   isi       String      @db.Text
-  gambarUrl String
+  gambarUrl String[]
+  videoUrl  String?
   jenis     JenisKonten
   isTampil  Boolean     @default(true)
   isDeleted Boolean     @default(false)

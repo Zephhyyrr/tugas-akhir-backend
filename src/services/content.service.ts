@@ -11,7 +11,6 @@ export async function getAllContentService(page: number, limit: number, jenis?: 
         whereClause.isTampil = true;
     }
     const contents = await prisma.content.findMany({
-        where: { isDeleted: false },
         skip,
         take,
         where: whereClause,
@@ -20,7 +19,7 @@ export async function getAllContentService(page: number, limit: number, jenis?: 
     });
 
     const totalItems = await prisma.content.count({
-        where: whereClause,
+        where: { isDeleted: false }
     });
     const meta = getPagingData(totalItems, pageNumber, pageSize);
     return {
@@ -53,7 +52,8 @@ export async function getContentByIdService(id: number) {
 export async function createContentService(
     judul: string,
     isi: string,
-    gambarUrl: string,
+    gambarUrl: string[],
+    videoUrl: string | undefined,
     jenis: JenisKonten,
     isTampil: boolean,
     userId: number
@@ -77,6 +77,7 @@ export async function createContentService(
             judul,
             isi,
             gambarUrl,
+            videoUrl,
             jenis,
             isTampil,
             userId
@@ -95,7 +96,8 @@ export async function updateContentService(
     id: number,
     judul: string,
     isi: string,
-    gambarUrl: string,
+    gambarUrl: string[],
+    videoUrl: string | undefined,
     jenis: JenisKonten,
     isTampil: boolean
 ) {
@@ -105,6 +107,7 @@ export async function updateContentService(
             judul,
             isi,
             gambarUrl,
+            videoUrl,
             jenis,
             isTampil
         },
