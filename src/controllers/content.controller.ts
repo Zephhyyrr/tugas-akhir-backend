@@ -81,21 +81,40 @@ export async function createContentController(req: Request, res: Response<Respon
 export async function updateContentController(req: Request, res: Response<ResponseApiType>) {
     try {
         const { id } = req.params;
-        const { judul, isi, jenis, isTampil } = req.body;
+        const { judul, isi, jenis, isTampil, existingGambar, deleteVideo } = req.body;
         const reqFiles = (req as any).files as { [fieldname: string]: Express.Multer.File[] } | undefined;
         const newGambarUrl = reqFiles?.['gambarUrl']?.map((file: any) => file.filename);
         const newVideoUrl = reqFiles?.['videoUrl']?.[0]?.filename;
 
         const isTampilBool = isTampil === 'true' || isTampil === true;
+        const isDeleteVideo = deleteVideo === 'true' || deleteVideo === true;
 
         const content = await getContentByIdService(Number(id));
+
+        let parsedExistingGambar: string[] = Array.isArray(content.gambarUrl) ? content.gambarUrl : [];
+        if (existingGambar !== undefined) {
+            try {
+                parsedExistingGambar = JSON.parse(existingGambar);
+            } catch {
+                parsedExistingGambar = [];
+            }
+        }
+
+        let finalGambarUrl: string[] = [...parsedExistingGambar, ...(newGambarUrl || [])];
+
+        let finalVideoUrl = content.videoUrl;
+        if (newVideoUrl !== undefined) {
+            finalVideoUrl = newVideoUrl;
+        } else if (isDeleteVideo) {
+            finalVideoUrl = null;
+        }
 
         const updatedContent = await updateContentService(
             Number(id),
             judul || content.judul,
             isi !== undefined ? isi : content.isi,
-            newGambarUrl && newGambarUrl.length > 0 ? newGambarUrl : content.gambarUrl,
-            newVideoUrl !== undefined ? newVideoUrl : content.videoUrl,
+            finalGambarUrl,
+            finalVideoUrl,
             jenis || content.jenis,
             isTampil !== undefined ? isTampilBool : content.isTampil
         );

@@ -97,7 +97,7 @@ export async function updateContentService(
     judul: string,
     isi: string,
     gambarUrl: string[],
-    videoUrl: string | undefined,
+    videoUrl: string | null,
     jenis: JenisKonten,
     isTampil: boolean
 ) {
