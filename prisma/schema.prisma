@@ -157,8 +157,8 @@ model Transaction {
 
 model Prediction {
   id                  Int      @id @default(autoincrement())
-  prediksiPemasukan   Float
-  prediksiPengeluaran Float
+  nominal             Float
+  tipe                TipeTransaksi
   tanggalTarget       DateTime
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -168,4 +168,18 @@ model Prediction {
 
   jenisKasId Int
   jenisKas   JenisKas @relation(fields: [jenisKasId], references: [id])
+
+  allocations         BudgetAllocation[]
+}
+
+model BudgetAllocation {
+  id           Int      @id @default(autoincrement())
+  nama         String
+  persentase   Float
+  nominal      Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  predictionId Int
+  prediction   Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
 }
