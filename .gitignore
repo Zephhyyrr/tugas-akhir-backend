@@ -1,5 +1,6 @@
 node_modules
 .env
+.env.*
 /public
 Rekapitulas_KAS_Uang_Keluar_Clean.xlsx
 Rekapitulasi_KAS_Uang_Masuk_Clean.xlsx
@@ -7,3 +8,9 @@ Rekapitulasi_TPQ_Keluar_Clean.xlsx
 Rekapitulasi_TPQ_Masuk_Clean.xlsx
 Rekapitulasi_Yatim_Keluar_Clean.xlsx
 Rekapitulasi_Yatim_Masuk_Clean.xlsx
+import_tpq_keluar_to_db.py
+import_tpq_masuk_to_db.py
+import_yatim_keluar_to_db.py
+import_yatim_masuk_to_db.py
+import_uang_keluar_to_db.py
+import_uang_masuk_to_db.py
