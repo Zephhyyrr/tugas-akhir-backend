@@ -14,3 +14,11 @@ import_yatim_keluar_to_db.py
 import_yatim_masuk_to_db.py
 import_uang_keluar_to_db.py
 import_uang_masuk_to_db.py
+dist/
+build/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
