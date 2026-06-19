@@ -3,7 +3,6 @@ import {
     getIncomePrediction, 
     getExpensePrediction,
     savePrediction,
-    allocatePrediction,
     saveAllocations,
     getPredictionHistory,
     getPredictionById,
@@ -18,7 +17,6 @@ predictRouter.use(jwtCheckToken);
 predictRouter.get("/income", getIncomePrediction);
 predictRouter.get("/expense", getExpensePrediction);
 predictRouter.post("/save", savePrediction);
-predictRouter.post("/allocate", allocatePrediction);
 predictRouter.post("/save-allocations", saveAllocations);
 predictRouter.get("/history", getPredictionHistory);
 predictRouter.get("/:id", getPredictionById);

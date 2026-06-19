@@ -4,7 +4,6 @@ import {
     getIncomePredictionService,
     getExpensePredictionService,
     savePredictionService,
-    allocatePredictionService,
     saveAllocationsService,
     getPredictionHistoryService,
     getPredictionByIdService,
@@ -38,16 +37,6 @@ export const savePrediction = async (req: Request, res: Response): Promise<void>
 
         const prediction = await savePredictionService(userId, Number(nominal), tipe, tanggalTarget);
         res.status(201).json({ success: true, message: "Berhasil menyimpan hasil prediksi.", data: prediction });
-    } catch (error: any) {
-        handlerAnyError(error, res);
-    }
-};
-
-export const allocatePrediction = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { nominal } = req.body;
-        const allocations = await allocatePredictionService(Number(nominal));
-        res.json({ success: true, data: allocations });
     } catch (error: any) {
         handlerAnyError(error, res);
     }

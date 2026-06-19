@@ -5,8 +5,15 @@ import { AppError } from "../errors/api_errors";
 const MODEL_API = process.env.API_MODELS || "http://127.0.0.1:5000";
 
 export async function getIncomePredictionService() {
+    const transactions = await prisma.transaction.findMany({
+        where: { jenisKasId: 1, tipe: 'uang_masuk', isDeleted: false },
+        select: { tanggal: true, nominal: true },
+        orderBy: { tanggal: 'asc' }
+    });
+
     const response = await axios.post(`${MODEL_API}/predict/income`, {
-        months_ahead: 1
+        months_ahead: 1,
+        transactions: transactions
     });
 
     if (response.data.status === "success" || response.data.success) {
@@ -16,8 +23,15 @@ export async function getIncomePredictionService() {
 }
 
 export async function getExpensePredictionService() {
+    const transactions = await prisma.transaction.findMany({
+        where: { jenisKasId: 1, tipe: 'uang_keluar', isDeleted: false },
+        select: { tanggal: true, nominal: true },
+        orderBy: { tanggal: 'asc' }
+    });
+
     const response = await axios.post(`${MODEL_API}/predict/expense`, {
-        months_ahead: 1
+        months_ahead: 1,
+        transactions: transactions
     });
 
     if (response.data.status === "success" || response.data.success) {
@@ -42,16 +56,6 @@ export async function savePredictionService(
             jenisKasId: 1
         }
     });
-}
-
-export async function allocatePredictionService(nominal: number) {
-    const total = nominal;
-    return [
-        { nama: "Biaya Operasional", persentase: 40, nominal: total * 0.40 },
-        { nama: "Pembangunan/Renovasi", persentase: 30, nominal: total * 0.30 },
-        { nama: "Kegiatan Sosial/Keagamaan", persentase: 20, nominal: total * 0.20 },
-        { nama: "Dana Cadangan", persentase: 10, nominal: total * 0.10 }
-    ];
 }
 
 export async function saveAllocationsService(predictionId: number, allocations: any[]) {
