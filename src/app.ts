@@ -7,10 +7,10 @@ import path from "path"
 import upload from "./middlewares/upload"
 import cookieParser from "cookie-parser"
 
-if (process.env.NODE_ENV === "production") {
-    dotenv.config({ path: ".env.production" })
+if (process.env.NODE_ENV === 'production') {
+    dotenv.config({ path: '.env' });
 } else {
-    dotenv.config()
+    dotenv.config({ path: '.env.production' });
 }
 const app = express()
 
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
     if (req.method === 'GET' || req.is('multipart/form-data') || req.method === 'PUT' || req.originalUrl.includes('/photo')) {
         return next();
     }
-    
+
     return upload.none()(req, res, next);
 });
 
