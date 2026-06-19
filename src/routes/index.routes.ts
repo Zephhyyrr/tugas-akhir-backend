@@ -12,7 +12,7 @@ import authRoutes from "./auth.routes";
 import predictRoutes from "./predict.routes";
 
 apiRouter.get("/health", (req, res) => {
-    res.json({ message: "API sukses berjalan" })
+    res.json({ message: "API sukses berhasil" })
 });
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/predict", predictRoutes);
