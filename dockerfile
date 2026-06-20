@@ -52,6 +52,9 @@ COPY --from=builder /app/dist ./dist/
 COPY --from=builder /app/prisma ./prisma/
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma/
 
+# [PENTING] Copy folder aset statis (logo email) karena file .png tidak ikut ter-compile oleh TypeScript
+COPY --from=builder /app/src/templates/assets ./src/templates/assets/
+
 # (OPSIONAL TAPI PENTING): Copy juga @prisma/client jika runtime Node.js kamu membutuhkannya
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client/
 
