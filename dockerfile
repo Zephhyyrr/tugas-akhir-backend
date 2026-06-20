@@ -10,7 +10,7 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 
 # Copy file dependensi terlebih dahulu
-COPY package*.json tsconfig.json ./
+COPY package*.json tsconfig.json prisma.config.ts ./
 
 # Pindahkan COPY prisma ke sini agar schema.prisma tersedia saat postinstall berjalan
 COPY prisma ./prisma/
@@ -42,7 +42,7 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 
 # Copy file dependensi untuk install production packages
-COPY package*.json ./
+COPY package*.json prisma.config.ts ./
 
 # Install HANYA dependensi produksi untuk menjaga ukuran image TETAP KECIL
 RUN npm ci --omit=dev --ignore-scripts
