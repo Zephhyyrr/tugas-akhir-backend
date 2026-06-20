@@ -44,7 +44,7 @@ RUN apk add --no-cache openssl
 # Copy file dependensi untuk install production packages
 COPY package*.json ./
 
-# Install HANYA dependensi produksi untuk menjaga ukuran image TETAP KECIL (Ini kunci agar lolos Cloudflare!)
+# Install HANYA dependensi produksi untuk menjaga ukuran image TETAP KECIL
 RUN npm ci --omit=dev --ignore-scripts
 
 # Copy artefak yang diperlukan dari stage 'builder'
@@ -52,11 +52,15 @@ COPY --from=builder /app/dist ./dist/
 COPY --from=builder /app/prisma ./prisma/
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma/
 
-# Buat folder untuk file upload saat runtime
-RUN mkdir -p /app/public/uploads && \
-    chown -R node:node /app/public
+# (OPSIONAL TAPI PENTING): Copy juga @prisma/client jika runtime Node.js kamu membutuhkannya
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client/
 
-# Ganti ke user non-root untuk keamanan tambahan
+# Buat folder uploads DAN ubah ownership seluruh isi /app agar menjadi milik user 'node'
+# Ini adalah KUNCI untuk memperbaiki error permission Prisma
+RUN mkdir -p /app/public/uploads && \
+    chown -R node:node /app
+
+# Setelah ownership aman, baru ganti ke user non-root untuk keamanan tambahan
 USER node
 
 # Expose port yang digunakan oleh aplikasi
