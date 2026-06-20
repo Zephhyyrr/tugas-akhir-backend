@@ -67,4 +67,4 @@ USER node
 EXPOSE 3000
 
 # Perintah untuk menjalankan kontainer
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["npm", "run", "start:prod"]
