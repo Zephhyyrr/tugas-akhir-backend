@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAlluserController, createUserController, getDraftUserController, getUserByIdController, updateUserController, deleteUserController, deletePermanentUserController, updatePhotoProfileController, toggleUserActiveController } from "../controllers/user.controller";
+import { getAlluserController, createUserController, getUserByIdController, updateUserController, deleteUserController, updatePhotoProfileController, toggleUserActiveController } from "../controllers/user.controller";
 import { createUserValidator, updateUserValidator, idValidator, updatePhotoValidator } from "../validator/user.validator";
 import upload, { validateUploadSizeByType } from "../middlewares/upload";
 import { jwtCheckToken } from "../middlewares/jwt_check_token";
@@ -9,13 +9,11 @@ const router = Router();
 
 router.get("/me", jwtCheckToken, meController);
 router.get("/", jwtCheckToken, isRole("superadmin"), getAlluserController);
-router.get("/draft", jwtCheckToken, isRole("superadmin"), getDraftUserController);
 router.get("/:id", jwtCheckToken, isRole("superadmin"), idValidator, getUserByIdController);
 router.post("/", upload.none(), createUserValidator, createUserController);
 router.put("/:id", jwtCheckToken, isRole("superadmin"), upload.none(), updateUserValidator, updateUserController);
 router.patch("/:id/activate", jwtCheckToken, isRole("superadmin"), idValidator, toggleUserActiveController);
 router.delete("/:id", jwtCheckToken, isRole("superadmin"), idValidator, deleteUserController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("superadmin"), idValidator, deletePermanentUserController);
 router.patch("/:id/photo", jwtCheckToken, isRole("superadmin", "admin"), updatePhotoValidator, upload.single("fotoProfile"), validateUploadSizeByType, updatePhotoProfileController);
 
 export default router;

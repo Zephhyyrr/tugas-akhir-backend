@@ -40,28 +40,7 @@ export async function getAllUserService(page: number, limit: number) {
     };
 }
 
-export async function getDraftUserService(page: number, limit: number) {
-    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
-    const users = await prisma.user.findMany({
-        skip,
-        take,
-        where: { isDeleted: true },
-        select: {
-            ...userResponseSelect
-        }
-    });
 
-    const totalItems = await prisma.user.count({
-        where: { isDeleted: true }
-    });
-
-    const meta = getPagingData(totalItems, pageNumber, pageSize);
-
-    return {
-        data: users,
-        meta
-    };
-}
 
 export async function getByIdService(params: { id: number }) {
     const { id } = params;
@@ -284,19 +263,7 @@ export async function deleteUserService(id: number) {
     };
 }
 
-export async function deletePermanentUserService(id: number) {
-    const user = await prisma.user.findUnique({ where: { id } });
 
-    if (!user) {
-        throw new AppError(`User dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!user.isDeleted) {
-        throw new AppError(`User dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.user.delete({ where: { id } });
-}
 
 const findUserById = async (id: number) => {
     const user = await prisma.user.findUnique({ where: { id } })
