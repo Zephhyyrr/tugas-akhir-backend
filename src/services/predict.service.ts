@@ -59,14 +59,36 @@ export async function savePredictionService(
 }
 
 export async function saveAllocationsService(predictionId: number, allocations: any[]) {
-    return prisma.budgetAllocation.createMany({
-        data: allocations.map((alloc) => ({
+    const incomingIds = allocations.map((a: any) => a.id).filter((id: any) => id !== undefined);
+
+    await prisma.budgetAllocation.deleteMany({
+        where: {
             predictionId,
-            nama: alloc.nama,
-            persentase: Number(alloc.persentase),
-            nominal: Number(alloc.nominal)
-        }))
+            id: { notIn: incomingIds }
+        }
     });
+
+    for (const alloc of allocations) {
+        if (alloc.id) {
+            await prisma.budgetAllocation.update({
+                where: { id: alloc.id },
+                data: {
+                    nama: alloc.nama,
+                    persentase: Number(alloc.persentase),
+                    nominal: Number(alloc.nominal)
+                }
+            });
+        } else {
+            await prisma.budgetAllocation.create({
+                data: {
+                    predictionId,
+                    nama: alloc.nama,
+                    persentase: Number(alloc.persentase),
+                    nominal: Number(alloc.nominal)
+                }
+            });
+        }
+    }
 }
 
 export async function getPredictionHistoryService(userId: number) {
