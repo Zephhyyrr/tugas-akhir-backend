@@ -6,7 +6,6 @@ import {
     createMediaPembayaranService,
     updateMediaPembayaranService,
     deleteMediaPembayaranService,
-    deletePermanentMediaPembayaranService,
     getDraftMediaPembayaranService
 } from "../services/media_pembayaran.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -90,20 +89,6 @@ export async function deleteMediaPembayaranController(req: Request, res: Respons
     }
 }
 
-export async function deletePermanentMediaPembayaranController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentMediaPembayaranService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen media pembayaran."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftMediaPembayaranController(req: Request, res: Response<ResponseApiType>) {
     try {

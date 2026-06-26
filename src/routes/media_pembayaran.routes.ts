@@ -5,7 +5,6 @@ import {
     createMediaPembayaranController,
     updateMediaPembayaranController,
     deleteMediaPembayaranController,
-    deletePermanentMediaPembayaranController,
     getDraftMediaPembayaranController
 } from "../controllers/media_pembayaran.controller";
 import {
@@ -25,6 +24,5 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createMediaPembayaranValidator, createMediaPembayaranController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateMediaPembayaranValidator, updateMediaPembayaranController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteMediaPembayaranController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentMediaPembayaranController);
 
 export default router;

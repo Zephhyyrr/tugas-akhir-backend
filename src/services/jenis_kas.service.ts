@@ -96,21 +96,6 @@ export async function deleteJenisKasService(id: number) {
     };
 }
 
-export async function deletePermanentJenisKasService(id: number) {
-    const jenisKas = await prisma.jenisKas.findUnique({
-        where: { id },
-    });
-
-    if (!jenisKas) {
-        throw new AppError(`Jenis Kas dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!jenisKas.isDeleted) {
-        throw new AppError(`Jenis Kas dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.jenisKas.delete({ where: { id } });
-}
 
 export async function getDraftJenisKasService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

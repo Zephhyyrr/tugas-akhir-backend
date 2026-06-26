@@ -5,7 +5,6 @@ import {
     createPesertaKurbanController,
     updatePesertaKurbanController,
     deletePesertaKurbanController,
-    deletePermanentPesertaKurbanController,
     getDraftPesertaKurbanController,
     getAvailableKurbanYearsController,
     getPublicKurbanByTahunController
@@ -29,6 +28,5 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createPesertaKurbanValidator, createPesertaKurbanController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updatePesertaKurbanValidator, updatePesertaKurbanController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePesertaKurbanController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentPesertaKurbanController);
 
 export default router;

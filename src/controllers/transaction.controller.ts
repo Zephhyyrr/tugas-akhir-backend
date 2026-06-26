@@ -6,7 +6,6 @@ import {
     createTransactionService,
     updateTransactionService,
     deleteTransactionService,
-    deletePermanentTransactionService,
     getDraftTransactionService,
     getDashboardSummaryService
 } from "../services/transaction.service";
@@ -128,20 +127,6 @@ export async function deleteTransactionController(req: Request, res: Response<Re
     }
 }
 
-export async function deletePermanentTransactionController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentTransactionService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen transaction."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftTransactionController(req: Request, res: Response<ResponseApiType>) { 
     try {

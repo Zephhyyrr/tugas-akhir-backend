@@ -6,7 +6,6 @@ import {
     createKelompokKurbanService,
     updateKelompokKurbanService,
     deleteKelompokKurbanService,
-    deletePermanentKelompokKurbanService,
     getDraftKelompokKurbanService
 } from "../services/kelompok_kurban.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -90,20 +89,6 @@ export async function deleteKelompokKurbanController(req: Request, res: Response
     }
 }
 
-export async function deletePermanentKelompokKurbanController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentKelompokKurbanService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen kelompok kurban."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftKelompokKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {

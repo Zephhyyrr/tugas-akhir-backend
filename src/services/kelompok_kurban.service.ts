@@ -96,21 +96,6 @@ export async function deleteKelompokKurbanService(id: number) {
     };
 }
 
-export async function deletePermanentKelompokKurbanService(id: number) {
-    const kelompokKurban = await prisma.kelompokKurban.findUnique({
-        where: { id },
-    });
-
-    if (!kelompokKurban) {
-        throw new AppError(`Kelompok Kurban dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!kelompokKurban.isDeleted) {
-        throw new AppError(`Kelompok Kurban dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.kelompokKurban.delete({ where: { id } });
-}
 
 export async function getDraftKelompokKurbanService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

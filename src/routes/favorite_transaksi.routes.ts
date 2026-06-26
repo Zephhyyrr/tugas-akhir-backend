@@ -5,7 +5,6 @@ import {
     createFavoriteTransaksiController,
     updateFavoriteTransaksiController,
     deleteFavoriteTransaksiController,
-    deletePermanentFavoriteTransaksiController,
     getDraftFavoriteTransaksiController
 } from "../controllers/favorite_transaksi.controller";
 import {
@@ -25,6 +24,5 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createFavoriteTransaksiValidator, createFavoriteTransaksiController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateFavoriteTransaksiValidator, updateFavoriteTransaksiController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteFavoriteTransaksiController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentFavoriteTransaksiController);
 
 export default router;

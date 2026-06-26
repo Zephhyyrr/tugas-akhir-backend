@@ -30,17 +30,17 @@ enum JenisKonten {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  isDeleted   Boolean   @default(false)
-  isActive    Boolean   @default(true)
+  id          Int      @id @default(autoincrement())
+  isDeleted   Boolean  @default(false)
+  isActive    Boolean  @default(true)
   nama        String
-  email       String    @unique
+  email       String   @unique
   role        RoleUser
   password    String
   fotoProfile String?
-  isVerified  Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   userToken    UserToken[]
   contents     Content[]
@@ -72,7 +72,7 @@ model Content {
   updatedAt DateTime    @updatedAt
 
   userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
 }
 
 model KelompokKurban {
@@ -146,7 +146,7 @@ model Transaction {
   updatedAt DateTime      @updatedAt
 
   userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
 
   jenisKasId Int
   jenisKas   JenisKas @relation(fields: [jenisKasId], references: [id])
@@ -156,30 +156,30 @@ model Transaction {
 }
 
 model Prediction {
-  id                  Int      @id @default(autoincrement())
-  nominal             Float
-  tipe                TipeTransaksi
-  tanggalTarget       DateTime
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id            Int           @id @default(autoincrement())
+  nominal       Float
+  tipe          TipeTransaksi
+  tanggalTarget DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id])
 
   jenisKasId Int
   jenisKas   JenisKas @relation(fields: [jenisKasId], references: [id])
 
-  allocations         BudgetAllocation[]
+  allocations BudgetAllocation[]
 }
 
 model BudgetAllocation {
-  id           Int      @id @default(autoincrement())
-  nama         String
-  persentase   Float
-  nominal      Float
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  nama       String
+  persentase Float
+  nominal    Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   predictionId Int
-  prediction   Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  prediction   Prediction @relation(fields: [predictionId], references: [id])
 }

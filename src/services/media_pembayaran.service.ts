@@ -96,21 +96,6 @@ export async function deleteMediaPembayaranService(id: number) {
     };
 }
 
-export async function deletePermanentMediaPembayaranService(id: number) {
-    const mediaPembayaran = await prisma.mediaPembayaran.findUnique({
-        where: { id },
-    });
-
-    if (!mediaPembayaran) {
-        throw new AppError(`Media Pembayaran dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!mediaPembayaran.isDeleted) {
-        throw new AppError(`Media Pembayaran dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.mediaPembayaran.delete({ where: { id } });
-}
 
 export async function getDraftMediaPembayaranService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

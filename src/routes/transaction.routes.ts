@@ -5,7 +5,6 @@ import {
     createTransactionController,
     updateTransactionController,
     deleteTransactionController,
-    deletePermanentTransactionController,
     getDraftTransactionController,
     getDashboardSummaryController
 } from "../controllers/transaction.controller";
@@ -29,6 +28,5 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createTransactionValidator, createTransactionController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateTransactionValidator, updateTransactionController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteTransactionController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentTransactionController);
 
 export default router;

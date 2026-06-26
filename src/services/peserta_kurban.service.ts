@@ -96,21 +96,6 @@ export async function deletePesertaKurbanService(id: number) {
     };
 }
 
-export async function deletePermanentPesertaKurbanService(id: number) {
-    const pesertaKurban = await prisma.pesertaKurban.findUnique({
-        where: { id },
-    });
-
-    if (!pesertaKurban) {
-        throw new AppError(`Peserta Kurban dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!pesertaKurban.isDeleted) {
-        throw new AppError(`Peserta Kurban dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.pesertaKurban.delete({ where: { id } });
-}
 
 export async function getDraftPesertaKurbanService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

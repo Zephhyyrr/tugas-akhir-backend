@@ -5,7 +5,6 @@ import {
     createKelompokKurbanController,
     updateKelompokKurbanController,
     deleteKelompokKurbanController,
-    deletePermanentKelompokKurbanController,
     getDraftKelompokKurbanController
 } from "../controllers/kelompok_kurban.controller";
 import {
@@ -25,6 +24,5 @@ router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, ge
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createKelompokKurbanValidator, createKelompokKurbanController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateKelompokKurbanValidator, updateKelompokKurbanController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteKelompokKurbanController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentKelompokKurbanController);
 
 export default router;

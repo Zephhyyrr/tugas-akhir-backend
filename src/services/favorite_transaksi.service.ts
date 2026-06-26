@@ -96,21 +96,6 @@ export async function deleteFavoriteTransaksiService(id: number) {
     };
 }
 
-export async function deletePermanentFavoriteTransaksiService(id: number) {
-    const favoriteTransaksi = await prisma.favoriteTransaksi.findUnique({
-        where: { id },
-    });
-
-    if (!favoriteTransaksi) {
-        throw new AppError(`Favorite Transaksi dengan id: ${id}, tidak tersedia.`);
-    }
-
-    if (!favoriteTransaksi.isDeleted) {
-        throw new AppError(`Favorite Transaksi dengan id: ${id} belum dihapus (soft delete).`);
-    }
-
-    await prisma.favoriteTransaksi.delete({ where: { id } });
-}
 
 export async function getDraftFavoriteTransaksiService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

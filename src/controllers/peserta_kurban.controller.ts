@@ -6,7 +6,6 @@ import {
     createPesertaKurbanService,
     updatePesertaKurbanService,
     deletePesertaKurbanService,
-    deletePermanentPesertaKurbanService,
     getDraftPesertaKurbanService
 } from "../services/peserta_kurban.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -91,20 +90,6 @@ export async function deletePesertaKurbanController(req: Request, res: Response<
     }
 }
 
-export async function deletePermanentPesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentPesertaKurbanService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen peserta kurban."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftPesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
     try {

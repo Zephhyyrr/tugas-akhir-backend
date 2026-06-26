@@ -142,17 +142,7 @@ export async function deleteTransactionService(id: number) {
     }).catch(handlePrismaError);
 }
 
-export async function deletePermanentTransactionService(id: number) {
-    const { count } = await prisma.transaction.deleteMany({
-        where: { id, isDeleted: true },
-    });
 
-    if (count === 0) {
-        const exists = await prisma.transaction.count({ where: { id } });
-        if (exists === 0) throw new AppError(`Transaction dengan id: ${id}, tidak tersedia.`);
-        throw new AppError(`Transaction dengan id: ${id} belum dihapus (soft delete).`);
-    }
-}
 
 export async function getDraftTransactionService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);

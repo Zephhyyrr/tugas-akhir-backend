@@ -6,7 +6,6 @@ import {
     createFavoriteTransaksiService,
     updateFavoriteTransaksiService,
     deleteFavoriteTransaksiService,
-    deletePermanentFavoriteTransaksiService,
     getDraftFavoriteTransaksiService
 } from "../services/favorite_transaksi.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -90,20 +89,6 @@ export async function deleteFavoriteTransaksiController(req: Request, res: Respo
     }
 }
 
-export async function deletePermanentFavoriteTransaksiController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentFavoriteTransaksiService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen favorite transaksi."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftFavoriteTransaksiController(req: Request, res: Response<ResponseApiType>) {
     try {

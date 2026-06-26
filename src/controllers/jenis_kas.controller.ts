@@ -6,7 +6,6 @@ import {
     createJenisKasService,
     updateJenisKasService,
     deleteJenisKasService,
-    deletePermanentJenisKasService,
     getDraftJenisKasService
 } from "../services/jenis_kas.service";
 import { handlerAnyError } from "../errors/api_errors";
@@ -90,20 +89,6 @@ export async function deleteJenisKasController(req: Request, res: Response<Respo
     }
 }
 
-export async function deletePermanentJenisKasController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentJenisKasService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen jenis kas."
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
 
 export async function getDraftJenisKasController(req: Request, res: Response<ResponseApiType>) {
     try {
