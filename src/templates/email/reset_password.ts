@@ -148,7 +148,7 @@ export function resetPasswordTemplate(nama: string, resetUrl: string): string {
                     </p>
 
                     <div class="cta-container">
-                        <a href="${resetUrl}" class="cta-button">Reset Kata Sandi Saya</a>
+                        <a href="${resetUrl}" class="cta-button" style="color: white !important;">Reset Kata Sandi Saya</a>
                     </div>
 
                     <div class="alternative">
