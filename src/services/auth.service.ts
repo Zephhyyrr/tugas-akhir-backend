@@ -9,7 +9,7 @@ export async function loginService(email: string, password: string) {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-        throw new AppError("Email atau password salah.");
+        throw new AppError("Email tidak terdaftar.");
     }
 
     if (!user.isActive) {
