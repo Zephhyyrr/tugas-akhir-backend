@@ -23,8 +23,7 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
             success: true,
             message: "Berhasil login.",
             data: {
-                user: result.user,
-                token: result.token
+                user: result.user
             }
         });
     } catch (error) {
@@ -35,14 +34,13 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
 export async function logoutController(req: Request, res: Response<ResponseApiType>) {
     try {
         const result = await logoutService();
-        const isSecure = process.env.FRONTEND_URL?.startsWith("https");
-
-        res.clearCookie("token", {
+        const cookieOptions = {
             httpOnly: true,
-            secure: isSecure,
-            sameSite: isSecure ? "none" : "lax",
-            path: "/"
-        });
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict' as const,
+        };
+
+        res.clearCookie("token", cookieOptions);
 
         return res.status(200).json({
             success: true,
