@@ -13,7 +13,8 @@ export async function loginController(req: Request, res: Response<ResponseApiTyp
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict' as const,
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'strict' as const,
+            domain: process.env.COOKIE_DOMAIN || undefined,
             maxAge: 30 * 24 * 60 * 60 * 1000 // 30 hari
         };
 
@@ -37,7 +38,8 @@ export async function logoutController(req: Request, res: Response<ResponseApiTy
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict' as const,
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'strict' as const,
+            domain: process.env.COOKIE_DOMAIN || undefined,
         };
 
         res.clearCookie("token", cookieOptions);
