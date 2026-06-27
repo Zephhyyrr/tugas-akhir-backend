@@ -1,5 +1,6 @@
 import { networkInterfaces } from "node:os";
 import app from "./app"
+import { initCronJobs } from "./config/cron";
 
 const PORT: number = parseInt(process.env.PORT || "2003", 10)
 
@@ -19,6 +20,8 @@ function getNetworkAdresses(): string[] {
 }
 
 function startServer(port: number) {
+    initCronJobs();
+
     const server = app.listen(port, () => {
         console.log(`• Server running on:`);
         console.log(`   Local:   http://localhost:${port}`);

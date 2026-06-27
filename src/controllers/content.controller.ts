@@ -6,7 +6,6 @@ import {
     createContentService,
     updateContentService,
     deleteContentService,
-    deletePermanentContentService,
     getDraftContentService
 } from "../services/content.service";
 import { AppError } from "../errors/api_errors";
@@ -138,21 +137,6 @@ export async function deleteContentController(req: Request, res: Response<Respon
         return res.status(200).json({
             success: true,
             message
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
-
-export async function deletePermanentContentController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const { id } = req.params;
-
-        await deletePermanentContentService(Number(id));
-
-        return res.status(200).json({
-            success: true,
-            message: "Berhasil menghapus permanen content."
         });
     } catch (error) {
         return handlerAnyError(error, res);

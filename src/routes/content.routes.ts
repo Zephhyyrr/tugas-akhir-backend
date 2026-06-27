@@ -5,7 +5,6 @@ import {
     createContentController,
     updateContentController,
     deleteContentController,
-    deletePermanentContentController,
     getDraftContentController
 } from "../controllers/content.controller";
 import {
@@ -25,6 +24,6 @@ router.get("/:id", idValidator, getContentByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 1 }]), validateUploadSizeByType, createContentValidator, createContentController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.fields([{ name: 'gambarUrl', maxCount: 10 }, { name: 'videoUrl', maxCount: 1 }]), validateUploadSizeByType, updateContentValidator, updateContentController);
 router.delete("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deleteContentController);
-router.delete("/:id/delete-permanent", jwtCheckToken, isRole("admin", "superadmin"), idValidator, deletePermanentContentController);
+
 
 export default router;
