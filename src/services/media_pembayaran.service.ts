@@ -43,6 +43,14 @@ export async function getMediaPembayaranByIdService(id: number) {
 }
 
 export async function createMediaPembayaranService(nama: string) {
+    const existing = await prisma.mediaPembayaran.findUnique({
+        where: { nama }
+    });
+
+    if (existing) {
+        throw new AppError("Media pembayaran sudah ada");
+    }
+
     const mediaPembayaran = await prisma.mediaPembayaran.create({
         data: { nama },
         include: { transactions: true, pesertaKurban: true },
@@ -57,6 +65,14 @@ export async function createMediaPembayaranService(nama: string) {
 
 export async function updateMediaPembayaranService(id: number, nama: string) {
     await getMediaPembayaranByIdService(id);
+
+    const existing = await prisma.mediaPembayaran.findUnique({
+        where: { nama }
+    });
+
+    if (existing && existing.id !== id) {
+        throw new AppError("Media pembayaran sudah ada");
+    }
 
     const updated = await prisma.mediaPembayaran.update({
         where: { id },
