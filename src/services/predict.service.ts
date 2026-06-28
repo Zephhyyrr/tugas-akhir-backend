@@ -111,6 +111,11 @@ export async function getPredictionByIdService(id: number, userId: number) {
 export async function deletePredictionService(id: number, userId: number) {
     const prediction = await prisma.prediction.findUnique({ where: { id } });
     if (!prediction || prediction.userId !== userId) return false;
+    
+    await prisma.budgetAllocation.deleteMany({
+        where: { predictionId: id }
+    });
+    
     await prisma.prediction.delete({ where: { id } });
     return true;
 }
