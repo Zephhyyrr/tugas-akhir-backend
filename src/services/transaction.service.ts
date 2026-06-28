@@ -16,15 +16,6 @@ export async function getAllTransactionService(page: number, limit: number, filt
 
     const AND: any[] = [{ isDeleted: false }];
 
-    if (filters.search) {
-        AND.push({
-            OR: [
-                { uraian: { contains: filters.search, mode: 'insensitive' } },
-                { jenisKas: { nama: { contains: filters.search, mode: 'insensitive' } } },
-            ]
-        });
-    }
-
     if (filters.type === 'income') {
         AND.push({ tipe: 'uang_masuk' });
     } else if (filters.type === 'expense') {

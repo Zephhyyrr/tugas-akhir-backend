@@ -18,7 +18,6 @@ export async function getAllTransactionController(req: Request, res: Response<Re
         const limit = Number(req.query.limit) || 10;
         
         const filters = {
-            search: req.query.search,
             type: req.query.type,
             startDate: req.query.startDate,
             endDate: req.query.endDate,
