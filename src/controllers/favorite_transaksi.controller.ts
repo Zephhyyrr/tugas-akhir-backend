@@ -89,17 +89,3 @@ export async function deleteFavoriteTransaksiController(req: Request, res: Respo
 }
 
 
-export async function getDraftFavoriteTransaksiController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const draftFavoriteTransaksi = await getDraftFavoriteTransaksiService(page, limit);
-        return res.status(200).json({
-            success: true,
-            message: "Mendapatkan data favorite transaksi yang dihapus.",
-            data: draftFavoriteTransaksi
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
