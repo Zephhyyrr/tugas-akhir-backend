@@ -81,11 +81,9 @@ export async function deletePesertaKurbanService(id: number) {
         throw new AppError(`Peserta Kurban dengan id: ${id}, tidak tersedia.`);
     }
 
-    const newDeletedStatus = !pesertaKurban.isDeleted;
-
     const deleted = await prisma.pesertaKurban.update({
         where: { id },
-        data: { isDeleted: newDeletedStatus },
+        data: { isDeleted: true },
         include: { mediaPembayaran: true, kelompokKurban: true },
     });
 
@@ -96,25 +94,3 @@ export async function deletePesertaKurbanService(id: number) {
     };
 }
 
-
-export async function getDraftPesertaKurbanService(page: number, limit: number) {
-    const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
-    const pesertaKurban = await prisma.pesertaKurban.findMany({
-        where: { isDeleted: true },
-        skip,
-        take,
-        include: { mediaPembayaran: true, kelompokKurban: true },
-    });
-    const totalItems = await prisma.pesertaKurban.count({
-        where: { isDeleted: true },
-    });
-    const meta = getPagingData(totalItems, pageNumber, pageSize);
-    return {
-        data: pesertaKurban.map(kt => ({
-            ...kt,
-            createdAt: kt.createdAt,
-            updatedAt: kt.updatedAt
-        })),
-        meta: meta
-    };
-}

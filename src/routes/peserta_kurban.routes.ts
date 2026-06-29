@@ -5,7 +5,6 @@ import {
     createPesertaKurbanController,
     updatePesertaKurbanController,
     deletePesertaKurbanController,
-    getDraftPesertaKurbanController,
     getAvailableKurbanYearsController,
     getPublicKurbanByTahunController
 } from "../controllers/peserta_kurban.controller";
@@ -21,7 +20,6 @@ import upload from "../middlewares/upload";
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllPesertaKurbanController);
-router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftPesertaKurbanController);
 router.get("/public/years", getAvailableKurbanYearsController);
 router.get("/public/kurban", getPublicKurbanByTahunController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getPesertaKurbanByIdController);

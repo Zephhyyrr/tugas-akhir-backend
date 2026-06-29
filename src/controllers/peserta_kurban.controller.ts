@@ -5,8 +5,7 @@ import {
     getPesertaKurbanByIdService,
     createPesertaKurbanService,
     updatePesertaKurbanService,
-    deletePesertaKurbanService,
-    getDraftPesertaKurbanService
+    deletePesertaKurbanService
 } from "../services/peserta_kurban.service";
 import { handlerAnyError } from "../errors/api_errors";
 import prisma from "../config/prisma";
@@ -90,22 +89,6 @@ export async function deletePesertaKurbanController(req: Request, res: Response<
     }
 }
 
-
-export async function getDraftPesertaKurbanController(req: Request, res: Response<ResponseApiType>) {
-    try {
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const draftPesertaKurban = await getDraftPesertaKurbanService(page, limit);
-        return res.status(200).json({
-            success: true,
-            message: "Mendapatkan data peserta kurban yang dihapus.",
-            data: draftPesertaKurban
-        });
-    } catch (error) {
-        return handlerAnyError(error, res);
-    }
-}
-
 export async function getAvailableKurbanYearsController(req: Request, res: Response<ResponseApiType>) {
     try {
         const kelompokYears = await prisma.kelompokKurban.findMany({
@@ -118,7 +101,7 @@ export async function getAvailableKurbanYearsController(req: Request, res: Respo
             distinct: ['tahun'],
             where: { isDeleted: false, tahun: { not: '' } }
         });
-        
+
         const yearsSet = new Set([...kelompokYears.map(y => y.tahun), ...individuYears.map(y => y.tahun)]);
         const years = Array.from(yearsSet).sort((a, b) => Number(b) - Number(a));
 
