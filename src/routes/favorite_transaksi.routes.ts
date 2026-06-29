@@ -5,7 +5,6 @@ import {
     createFavoriteTransaksiController,
     updateFavoriteTransaksiController,
     deleteFavoriteTransaksiController,
-    getDraftFavoriteTransaksiController
 } from "../controllers/favorite_transaksi.controller";
 import {
     createFavoriteTransaksiValidator,
@@ -19,7 +18,6 @@ import upload from "../middlewares/upload";
 const router = Router();
 
 router.get("/", jwtCheckToken, isRole("admin", "superadmin"), getAllFavoriteTransaksiController);
-router.get("/draft", jwtCheckToken, isRole("admin", "superadmin"), getDraftFavoriteTransaksiController);
 router.get("/:id", jwtCheckToken, isRole("admin", "superadmin"), idValidator, getFavoriteTransaksiByIdController);
 router.post("/", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), createFavoriteTransaksiValidator, createFavoriteTransaksiController);
 router.put("/:id", jwtCheckToken, isRole("admin", "superadmin"), upload.none(), updateFavoriteTransaksiValidator, updateFavoriteTransaksiController);

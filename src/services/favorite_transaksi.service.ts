@@ -5,7 +5,6 @@ import { getPagination, getPagingData } from "../utils/pagination";
 export async function getAllFavoriteTransaksiService(page: number, limit: number) {
     const { skip, take, pageNumber, pageSize } = getPagination(page, limit);
     const favoriteTransaksi = await prisma.favoriteTransaksi.findMany({
-        where: { isDeleted: false },
         skip,
         take,
         
