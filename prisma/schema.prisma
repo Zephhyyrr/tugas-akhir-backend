@@ -127,7 +127,7 @@ model MediaPembayaran {
 
 model FavoriteTransaksi {
   id        Int      @id @default(autoincrement())
-  uraian    String   @unique
+  uraian    String
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

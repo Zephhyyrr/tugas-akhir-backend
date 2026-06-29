@@ -56,6 +56,7 @@ export const initCronJobs = () => {
                     }
                 });
             }
+
         } catch (error) {
             // Silently fail, avoiding log clutter
         }

@@ -8,7 +8,7 @@ export async function getAllKelompokKurbanService(page: number, limit: number) {
         where: { isDeleted: false },
         skip,
         take,
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     const totalItems = await prisma.kelompokKurban.count({
@@ -28,7 +28,7 @@ export async function getAllKelompokKurbanService(page: number, limit: number) {
 export async function getKelompokKurbanByIdService(id: number) {
     const kelompokKurban = await prisma.kelompokKurban.findUnique({
         where: { id },
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     if (!kelompokKurban) {
@@ -45,7 +45,7 @@ export async function getKelompokKurbanByIdService(id: number) {
 export async function createKelompokKurbanService(nama: string, tahun: string) {
     const kelompokKurban = await prisma.kelompokKurban.create({
         data: { nama, tahun },
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     return {
@@ -61,7 +61,7 @@ export async function updateKelompokKurbanService(id: number, nama: string, tahu
     const updated = await prisma.kelompokKurban.update({
         where: { id },
         data: { nama, tahun },
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     return {
@@ -74,7 +74,7 @@ export async function updateKelompokKurbanService(id: number, nama: string, tahu
 export async function deleteKelompokKurbanService(id: number) {
     const kelompokKurban = await prisma.kelompokKurban.findUnique({
         where: { id },
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     if (!kelompokKurban) {
@@ -86,7 +86,7 @@ export async function deleteKelompokKurbanService(id: number) {
     const deleted = await prisma.kelompokKurban.update({
         where: { id },
         data: { isDeleted: newDeletedStatus },
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
 
     return {
@@ -103,7 +103,7 @@ export async function getDraftKelompokKurbanService(page: number, limit: number)
         where: { isDeleted: true },
         skip,
         take,
-        include: { peserta: true },
+        include: { peserta: { where: { isDeleted: false } } },
     });
     const totalItems = await prisma.kelompokKurban.count({
         where: { isDeleted: true },
